@@ -18,9 +18,11 @@ namespace Forza4.forms
     public partial class Log : Form
     {
 #region variabili
-        private string ip, username;
-        private int port;
-        private bool PortaOkay = true;
+        public string username;
+       public IPAddress ip;
+        public int port;
+        public string mode = "host";
+        public bool PortaOkay = true;
         private bool errore = false;
 #endregion
         public Log()
@@ -31,17 +33,17 @@ namespace Forza4.forms
         {
             if (Controllo_Start())
             {
-                Ip = txt_IP.Text;
-                Username = txt_Username.Text;
+               
+                username = txt_Username.Text;
                 port = Convert.ToInt32(txt_Porta.Text);
                 if (RB_Host.Checked)
                 {
-                    StartHost();
-                    StartClient();
+                  ip = IPAddress.Any;
                 }
                 else
                 {
-                    StartClient();
+                    ip =IPAddress.Parse( txt_IP.Text);
+                    mode = "client";
                 }
                 DialogResult = DialogResult.OK;                
             }
@@ -86,17 +88,7 @@ namespace Forza4.forms
             }
         }
 
-        private void StartHost() //Bisogna far partire l'host 
-        {
-            
-            
-        }
-
-        private void StartClient() //Bisogna far partire il proprio client
-        {
-
-
-        }
+    
         private bool controlloIP(string IPdaControllare)
         {
             IPAddress coso;
@@ -127,7 +119,7 @@ namespace Forza4.forms
 
         private void txt_Porta_TextChanged(object sender, EventArgs e)
         {
-            if (txt_Porta.Text.Trim().Length > 0 && Int32.TryParse(txt_Porta.Text, out port) && port >= 49152 && port <= 65535)
+            if (txt_Porta.Text.Trim().Length > 0 && Int32.TryParse(txt_Porta.Text, out port)/*&& port >= 49152 && port <= 65535*/ )
             {
                 txt_Porta.ForeColor = Color.Black;
                 PortaOkay = true;
@@ -139,11 +131,6 @@ namespace Forza4.forms
             }
         }
 
- #region Proprietà
-        public string Username { get => username; set => username = value; }
-        public int Port { get => port; set => port = value; }
-        public string Ip { get => ip; set => ip = value; }
-        #endregion
 
     }
 }
