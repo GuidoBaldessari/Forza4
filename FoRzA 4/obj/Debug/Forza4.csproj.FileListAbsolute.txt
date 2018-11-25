@@ -53,3 +53,14 @@ Z:\Desktop\FoRzA 4\FoRzA 4\obj\Debug\FoRzA 4.pdb
 \\Repo\Studenti$\Informatica\SezAi\5Ai\Guido.Baldessari\Documenti\Download\FoRzA 4\FoRzA 4\obj\Debug\Forza4.csproj.CoreCompileInputs.cache
 \\Repo\Studenti$\Informatica\SezAi\5Ai\Guido.Baldessari\Documenti\Download\FoRzA 4\FoRzA 4\obj\Debug\FoRzA 4.exe
 \\Repo\Studenti$\Informatica\SezAi\5Ai\Guido.Baldessari\Documenti\Download\FoRzA 4\FoRzA 4\obj\Debug\FoRzA 4.pdb
+C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\FoRzA 4\FoRzA 4\bin\Debug\FoRzA 4.exe.config
+C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\FoRzA 4\FoRzA 4\bin\Debug\FoRzA 4.exe
+C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\FoRzA 4\FoRzA 4\bin\Debug\FoRzA 4.pdb
+C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\FoRzA 4\FoRzA 4\obj\Debug\Forza4.csprojAssemblyReference.cache
+C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\FoRzA 4\FoRzA 4\obj\Debug\Forza4.FormPrincipale.resources
+C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\FoRzA 4\FoRzA 4\obj\Debug\Forza4.forms.Log.resources
+C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\FoRzA 4\FoRzA 4\obj\Debug\FoRzA_4.Properties.Resources.resources
+C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\FoRzA 4\FoRzA 4\obj\Debug\Forza4.csproj.GenerateResource.cache
+C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\FoRzA 4\FoRzA 4\obj\Debug\Forza4.csproj.CoreCompileInputs.cache
+C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\FoRzA 4\FoRzA 4\obj\Debug\FoRzA 4.exe
+C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\FoRzA 4\FoRzA 4\obj\Debug\FoRzA 4.pdb

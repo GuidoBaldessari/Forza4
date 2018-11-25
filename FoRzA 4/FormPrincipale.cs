@@ -20,32 +20,84 @@ namespace Forza4
     public partial class FormPrincipale : Form
     {
         #region variabili e proprietà
-
         Socket socket;
         string msg ="aa";
-        static public int righe = 6, colonne = 7, CountPlayer = 0, CountAvv = 0;
-        public Forza4Logic logica = new Forza4Logic();
 
-        Image PedinaPlayer = FoRzA_4.Properties.Resources.Pedina_1, PedinaAvversario = FoRzA_4.Properties.Resources.Pedina__1, PedinaVuota = FoRzA_4.Properties.Resources.Pedina_vuota;
-        static protected int larghezzaPedina = 125, altezzaPedina = 125;
+        public Forza4Logic logica;
+
+        private int righe;
+        public int Righe
+        {
+            get { return righe; }
+            set { righe = value; }
+        }
+
+        private int colonne;
+        public int Colonne
+        {
+            get { return colonne; }
+            set { colonne = value; }
+        }
+
+        private int altezzaPedina;
+        public int AltezzaPedina
+        {
+            get { return altezzaPedina; }
+            set { altezzaPedina = value; }
+        }
+
+        private int larghezzaPedina;
+        public int LarghezzaPedina
+        {
+            get { return larghezzaPedina; }
+            set { larghezzaPedina = value; }
+        }
+
+        Image PedinaPlayer = FoRzA_4.Properties.Resources.Pedina_1;
+        Image PedinaAvversario = FoRzA_4.Properties.Resources.Pedina__1;
+        Image PedinaVuota = FoRzA_4.Properties.Resources.Pedina_vuota;
+
+        private int countPlayer;
+        public int CountPlayer
+        {
+            get { return countPlayer; }
+            set { countPlayer = value; }
+        }
+
+        private int countAvv;
+        public int CountAvv
+        {
+            get { return countAvv; }
+            set { countAvv = value; }
+        }
 
         public string turnoPlayer = "Me", turnoAvversario = "Avversario", stato = "wait";
+
         IPAddress ip;
         public int porta;
-
-
-        public int AltezzaPedina { get => altezzaPedina; set => altezzaPedina = value; }
-        public int LarghezzaPedina { get => larghezzaPedina; set => larghezzaPedina = value; }
 
         #endregion
 
         #region form principale
         public FormPrincipale()
         {
+            
+
+            righe = 6;
+            colonne = 7;
+            larghezzaPedina = 125;
+            altezzaPedina = 125;
+
+            countPlayer = 0;
+            countAvv = 0;
+
+            logica = new Forza4Logic(righe, colonne);
+
             InitializeComponent();
+
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             System.Windows.Forms.Timer GameTimer = new System.Windows.Forms.Timer();
-            GameTimer.Interval = 20;
+            GameTimer.Interval = 200;
             GameTimer.Tick += new EventHandler(GameTick);
             GameTimer.Start();
 
@@ -66,13 +118,20 @@ namespace Forza4
         public void login()
         {
             Log FormLogin = new Log();
+
             if (FormLogin.ShowDialog() == DialogResult.OK)
             {
                 ip = FormLogin.ip;
                 porta = FormLogin.port;
                 Thread t;
-                if (FormLogin.mode == "host") t = new Thread(HostThread);
-                else t = new Thread(JoinerThread);
+                if (FormLogin.mode == "host")
+                {
+                    t = new Thread(HostThread);
+                }
+                else
+                {
+                    t = new Thread(JoinerThread);
+                }
                 t.Start();
             }
             else //se viene chiuso il form del login si chiude tutto e bom
@@ -97,8 +156,6 @@ namespace Forza4
             stato = "game";
             GetChanges();
         }
-
-
 
         #endregion
 
@@ -179,8 +236,15 @@ namespace Forza4
         }
         public void Aggiorna()
         {
-            MatriceSuDgv(logica.Campo);
-            ColoraCelle();
+            for (int i = 0; i < righe; i++)
+            {
+                for (int j = 0; j < colonne; j++)
+                {
+                    dgv[j, i].Value = logica.Campo[i, j];
+                }
+            }
+
+            //ColoraCelle();
         }
         private void Reset()
         {
@@ -190,41 +254,19 @@ namespace Forza4
         }
         #endregion
 
-        #region celle
-
-
-
-
-        void ColoraCelle()
-        {
-            for (int i = 0; i < dgv.RowCount; i++)
-            {
-                for (int j = 0; j < dgv.ColumnCount; j++)
-                {
-
-                    int value = Convert.ToInt32(dgv[j, i].Value);
-                    if (value == 0)
-                        dgv[j, i].Style.BackColor = System.Drawing.Color.Blue;
-                    if (value == 1)
-                        dgv[j, i].Style.BackColor = System.Drawing.Color.Green;
-                    if (value == -1)
-                        dgv[j, i].Style.BackColor = System.Drawing.Color.Red;
-                }
-            }
-        }
         private void dgv_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
             Rectangle cella = e.CellBounds;
 
-            if (dgv[e.ColumnIndex, e.RowIndex].Style.BackColor == Color.Blue)
+            if (Convert.ToInt32(dgv[e.ColumnIndex, e.RowIndex].Value) == 0)
             {
                 e.Graphics.DrawImage(PedinaVuota, cella);
             }
-            if (dgv[e.ColumnIndex, e.RowIndex].Style.BackColor == Color.Red)
+            else if (Convert.ToInt32(dgv[e.ColumnIndex, e.RowIndex].Value) == -1)
             {
                 e.Graphics.DrawImage(PedinaAvversario, cella);
             }
-            if (dgv[e.ColumnIndex, e.RowIndex].Style.BackColor == Color.Green)
+            else if (Convert.ToInt32(dgv[e.ColumnIndex, e.RowIndex].Value) == 1)
             {
                 e.Graphics.DrawImage(PedinaPlayer, cella);
             }
@@ -233,19 +275,29 @@ namespace Forza4
             e.Handled = true;
         }
 
-        void MatriceSuDgv(int[,] matrice)
+        /*void ColoraCelle()
         {
-
-            for (int i = 0; i < righe; i++)
+            for (int i = 0; i < dgv.RowCount; i++)
             {
-                for (int j = 0; j < colonne; j++)
+                for (int j = 0; j < dgv.ColumnCount; j++)
                 {
-                    dgv[j, i].Value = matrice[i, j];
+
+                    int value = Convert.ToInt32(dgv[j, i].Value);
+                    if (value == 0)
+                    {
+                        dgv[j, i].Style.BackColor = System.Drawing.Color.Blue;
+                    }
+                    else if (value == 1)
+                    {
+                        dgv[j, i].Style.BackColor = System.Drawing.Color.Green;
+                    }
+                    else if(value == -1)
+                    {
+                        dgv[j, i].Style.BackColor = System.Drawing.Color.Red;
+                    }
                 }
             }
-        }
-
-        #endregion
+        }*/
 
         public void GetChanges()
         {
