@@ -328,7 +328,7 @@ namespace Forza4
 
         }
         #endregion
-        public int eseguiMossa(int colonna)
+        public int eseguiMossa(int colonna, int turno)
         {
             //-3 mossa non eseguita per turno sbagliato
             //-2 mossa non eseguita per colonna piena
@@ -339,8 +339,8 @@ namespace Forza4
             //2 vittoria giocatore 2
             int stato = -3;
 
-            if(true)
-            //if (_turno == _proprioTurno)
+            //if(true)
+            if (_turno == turno)
             {
                 if (!mossa(colonna))
                 {

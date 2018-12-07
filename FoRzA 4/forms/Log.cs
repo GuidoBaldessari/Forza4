@@ -131,6 +131,9 @@ namespace Forza4.forms
             }
         }
 
+        private void RB_Join_CheckedChanged(object sender, EventArgs e)
+        {
 
+        }
     }
 }

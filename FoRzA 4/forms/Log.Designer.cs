@@ -59,6 +59,7 @@
             this.txt_IP.Name = "txt_IP";
             this.txt_IP.Size = new System.Drawing.Size(100, 20);
             this.txt_IP.TabIndex = 2;
+            this.txt_IP.Text = "127.0.0.1";
             // 
             // txt_Username
             // 
@@ -109,6 +110,7 @@
             this.RB_Join.TabIndex = 1;
             this.RB_Join.Text = "Join";
             this.RB_Join.UseVisualStyleBackColor = true;
+            this.RB_Join.CheckedChanged += new System.EventHandler(this.RB_Join_CheckedChanged);
             // 
             // RB_Host
             // 

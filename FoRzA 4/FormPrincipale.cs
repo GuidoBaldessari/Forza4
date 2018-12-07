@@ -24,7 +24,7 @@ namespace Forza4
         public int porta;
         Socket socket;
         string msg;
-
+        int situa;
         public Forza4Logic logica;
 
         private int righe;
@@ -153,6 +153,7 @@ namespace Forza4
         public void HostThread()
         {
             //AddToConsoleBox("Host thread started");
+            logica.ProprioTurno = 1;
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[3];
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, porta);
@@ -166,15 +167,16 @@ namespace Forza4
         }
         public void JoinerThread()
         {
+            logica.ProprioTurno = -1;
             //ConsoleBox.Items.Add("Joiner thread started");
             IPEndPoint remoteEP = new IPEndPoint(ip, porta);
             socket.Connect(remoteEP);
 
             //AddToConsoleBox("Checkpoint 0");
             stato = "game";
-            Console.WriteLine(GetLocalIPAddress());
-            byte[] msg = Encoding.ASCII.GetBytes(GetLocalIPAddress());
-            int bytesSent = socket.Send(msg);
+            //Console.WriteLine(GetLocalIPAddress());
+            //byte[] msg = Encoding.ASCII.GetBytes(GetLocalIPAddress());
+            //int bytesSent = socket.Send(msg);
             GetChanges();
         }
 
@@ -183,7 +185,10 @@ namespace Forza4
             while (true)
             {
                 string data = null;
+                string[] mossa;
                 byte[] bytes = new Byte[1024];
+
+
                 while (true)
                 {
                     int bytesRec = socket.Receive(bytes);
@@ -191,27 +196,30 @@ namespace Forza4
                     int separatore = data.IndexOf('|');
                     if (separatore > -1)
                     {
-                        data.Remove(separatore);
+                        mossa = data.Split('|');
                         break;
                     }
                 }
-                Console.WriteLine(data.ToString());
+                //DEBUGGING
+                /*foreach (var item in mossa)
+                {
+                    Console.Write(item.ToString());
+                    Console.WriteLine("\n");
+                }*/
                 
                 //logica.stampaCampo();
                 //
                 try
                 {
-                    data.Remove('|');
-                    logica.eseguiMossa(Convert.ToInt32(data));
+                    int stato = logica.eseguiMossa(Convert.ToInt32(mossa[0]),-logica.ProprioTurno);
+                    aggiorna();
+                    Console.WriteLine(stato);
                 }
                 catch (Exception)
                 {
 
-                    Console.WriteLine("Non una colonna");
+                    //Console.WriteLine("Non una colonna");
                 }
-
-
-
             }
         }//legge finchè non trova |
 
@@ -229,7 +237,7 @@ namespace Forza4
                 this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
                 dgv.RowCount = righe;
                 dgv.ColumnCount = colonne;
-                Aggiorna();                
+                //aggiorna();                
             }
 
 
@@ -237,14 +245,43 @@ namespace Forza4
         private void dgv_CellContentClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             //controlloVittoria();
-            int stato = logica.eseguiMossa(e.ColumnIndex);            
+             situa = logica.eseguiMossa(e.ColumnIndex, logica.ProprioTurno);            
             msg = e.ColumnIndex.ToString()+"|";
             socket.Send(Encoding.ASCII.GetBytes(msg));
 
+            aggiorna();
+           
 
-            Aggiorna();
-            switch (stato)
+        }
+        private void CambiaTurnolbl()
+        {
+            if (logica.Turno == logica.ProprioTurno)
+                label3.Text = "Turno: " + turnoPlayer;
+            else
+                label3.Text = "Turno: " + turnoAvversario;
+            //Partita in corso
+        }
+        public void aggiornaGrafica()
+        {
+            for (int i = 0; i < righe; i++)
             {
+                for (int j = 0; j < colonne; j++)
+                {
+                    dgv[j, i].Value = logica.Campo[i, j];
+                }
+            }
+            //ColoraCelle();
+        }
+
+        public void aggiorna()
+        {
+            aggiornaGrafica();
+
+            switch (situa)
+            {
+                case -3:
+                    MessageBox.Show("Il turno è dell'avversario");
+                    break;
                 case -2:
                     MessageBox.Show("Colonna Piena:)");
                     break;
@@ -264,37 +301,20 @@ namespace Forza4
                     MessageBox.Show("Giocatore 2 vince :)");
                     CountAvv++;
                     break;
+                default:
+                    break;
             }
 
-            if (stato >= 0)
+            if (situa >= 0)
             {
                 Reset();
             }
-
-        }
-        private void CambiaTurnolbl()
-        {
-            if (logica.Turno == logica.ProprioTurno)
-                label3.Text = "Turno: " + turnoPlayer;
-            else
-                label3.Text = "Turno: " + turnoAvversario;
-            //Partita in corso
-        }
-        public void Aggiorna()
-        {
-            for (int i = 0; i < righe; i++)
-            {
-                for (int j = 0; j < colonne; j++)
-                {
-                    dgv[j, i].Value = logica.Campo[i, j];
-                }
-            }
-            //ColoraCelle();
         }
         private void Reset()
         {
             logica = new Forza4Logic(righe, colonne);
-            Aggiorna();
+            situa = -4;
+            aggiorna();
             CambiaTurnolbl();
         }
         private void dgv_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
