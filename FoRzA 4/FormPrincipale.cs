@@ -20,8 +20,10 @@ namespace Forza4
     public partial class FormPrincipale : Form
     {
         #region variabili e proprietà
+        IPAddress ip;
+        public int porta;
         Socket socket;
-        string msg ="aa";
+        string msg;
 
         public Forza4Logic logica;
 
@@ -31,21 +33,18 @@ namespace Forza4
             get { return righe; }
             set { righe = value; }
         }
-
         private int colonne;
         public int Colonne
         {
             get { return colonne; }
             set { colonne = value; }
         }
-
         private int altezzaPedina;
         public int AltezzaPedina
         {
             get { return altezzaPedina; }
             set { altezzaPedina = value; }
         }
-
         private int larghezzaPedina;
         public int LarghezzaPedina
         {
@@ -63,7 +62,6 @@ namespace Forza4
             get { return countPlayer; }
             set { countPlayer = value; }
         }
-
         private int countAvv;
         public int CountAvv
         {
@@ -72,21 +70,16 @@ namespace Forza4
         }
 
         public string turnoPlayer = "Me", turnoAvversario = "Avversario", stato = "wait";
-
-        IPAddress ip;
-        public int porta;
-
         #endregion
 
         #region form principale
         public FormPrincipale()
         {
-            
 
             righe = 6;
             colonne = 7;
-            larghezzaPedina = 125;
-            altezzaPedina = 125;
+            larghezzaPedina = 100;
+            altezzaPedina = 100;
 
             countPlayer = 0;
             countAvv = 0;
@@ -141,36 +134,87 @@ namespace Forza4
         }
         #endregion
 
-        #region server
+        #region Comunicazione
+
+        public string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
+
 
         public void HostThread()
         {
             //AddToConsoleBox("Host thread started");
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            IPAddress ipAddress = ipHostInfo.AddressList[3];
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, porta);
             socket.Bind(localEndPoint);
             socket.Listen(1);
             socket = socket.Accept();
             //AddToConsoleBox("Checkpoint 0");
             stato = "game";
+
             GetChanges();
         }
-
-        #endregion
-
-        #region client
         public void JoinerThread()
         {
             //ConsoleBox.Items.Add("Joiner thread started");
             IPEndPoint remoteEP = new IPEndPoint(ip, porta);
             socket.Connect(remoteEP);
+
             //AddToConsoleBox("Checkpoint 0");
             stato = "game";
-            byte[] msg = Encoding.ASCII.GetBytes("connesso brooh|");
+            Console.WriteLine(GetLocalIPAddress());
+            byte[] msg = Encoding.ASCII.GetBytes(GetLocalIPAddress());
             int bytesSent = socket.Send(msg);
             GetChanges();
         }
+
+        public void GetChanges()
+        {
+            while (true)
+            {
+                string data = null;
+                byte[] bytes = new Byte[1024];
+                while (true)
+                {
+                    int bytesRec = socket.Receive(bytes);
+                    data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                    int separatore = data.IndexOf('|');
+                    if (separatore > -1)
+                    {
+                        data.Remove(separatore);
+                        break;
+                    }
+                }
+                Console.WriteLine(data.ToString());
+                
+                //logica.stampaCampo();
+                //
+                try
+                {
+                    data.Remove('|');
+                    logica.eseguiMossa(Convert.ToInt32(data));
+                }
+                catch (Exception)
+                {
+
+                    Console.WriteLine("Non una colonna");
+                }
+
+
+
+            }
+        }//legge finchè non trova |
+
         #endregion
 
         #region logica
@@ -194,8 +238,10 @@ namespace Forza4
         {
             //controlloVittoria();
             int stato = logica.eseguiMossa(e.ColumnIndex);            
-            msg = ""+e.ColumnIndex.ToString()+"|";
+            msg = e.ColumnIndex.ToString()+"|";
             socket.Send(Encoding.ASCII.GetBytes(msg));
+
+
             Aggiorna();
             switch (stato)
             {
@@ -228,7 +274,7 @@ namespace Forza4
         }
         private void CambiaTurnolbl()
         {
-            if (logica.Turno == 1)
+            if (logica.Turno == logica.ProprioTurno)
                 label3.Text = "Turno: " + turnoPlayer;
             else
                 label3.Text = "Turno: " + turnoAvversario;
@@ -243,7 +289,6 @@ namespace Forza4
                     dgv[j, i].Value = logica.Campo[i, j];
                 }
             }
-
             //ColoraCelle();
         }
         private void Reset()
@@ -252,8 +297,6 @@ namespace Forza4
             Aggiorna();
             CambiaTurnolbl();
         }
-        #endregion
-
         private void dgv_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
             Rectangle cella = e.CellBounds;
@@ -274,7 +317,7 @@ namespace Forza4
             e.Graphics.DrawRectangle(Pens.Black, cella);
             e.Handled = true;
         }
-
+        #endregion
         /*void ColoraCelle()
         {
             for (int i = 0; i < dgv.RowCount; i++)
@@ -298,26 +341,6 @@ namespace Forza4
                 }
             }
         }*/
-
-        public void GetChanges()
-        {
-            while (true)
-            {
-                string data = null;
-                byte[] bytes = new Byte[1024];
-                while (true)
-                {
-                    int bytesRec = socket.Receive(bytes);
-                    data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                    if (data.IndexOf('|') > -1)
-                    {
-                        break;
-                    }
-                }
-                Console.WriteLine(data.ToString());
-                
-            }
-        }//legge finchè non trova |
     }
 }
 

@@ -66,6 +66,15 @@ namespace Forza4
             get { return _turno; }
             set { _turno = value; }
         }
+
+        protected int _proprioTurno;
+        public int ProprioTurno
+        {
+            get { return _proprioTurno; }
+            set { _proprioTurno = value; }
+        }
+
+
         #endregion
 
         #region Indentifica il vincitore della partita (0 --> pareggio, 1 --> giocatore1, 2 --> giocatore2)
@@ -105,7 +114,7 @@ namespace Forza4
             }
         }
 
-        /*public void stampaCampo() //Stampa il campo, inutile in visuale. Utile solo a scopo di debug
+        public void stampaCampo() //Stampa il campo, inutile in visuale. Utile solo a scopo di debug
         {
                 Console.WriteLine("---------------------------------------------");
             for (int i = 0; i < _righe; i++)
@@ -117,7 +126,7 @@ namespace Forza4
                 Console.WriteLine();
             }
             Console.WriteLine("---------------------------------------------");
-        }*/
+        }
         protected bool mossa(int colonna) //Metodo per effettuare una mossa in una colonna non piena e calcolare la riga in cui si fermetà il gettone
         {
             bool esitoMossa = false;
@@ -128,14 +137,22 @@ namespace Forza4
                 if (_campo[riga, colonna] == 0) //Se la posizione è libera
                 {
                     esitoMossa = true; //Indica che la mossa è stata eseguita
+
                     _ultimaRigaMossa = riga;
                     _ultimaColonnaMossa = colonna;
+
                     _campo[_ultimaRigaMossa, _ultimaColonnaMossa] = _turno; //Posiziona il gettone del giocatore che sta giocando in questo momento
                     _mosseRimanenti--; //Decrementa le mosse rimanenti
+
                     if (_mosseRimanenti % 2 == 0)
+                    {
                         _turno = 1;
+                    }
                     else
+                    {
                         _turno = -1;
+                    }
+
                     //stampaCampo();
                 }
                 else
@@ -313,34 +330,41 @@ namespace Forza4
         #endregion
         public int eseguiMossa(int colonna)
         {
-            //-2 mossa non eseguita
+            //-3 mossa non eseguita per turno sbagliato
+            //-2 mossa non eseguita per colonna piena
             //-1 a partita in corso
 
             //0 pareggio
             //1 vittoria giocatore 1
             //2 vittoria giocatore 2
+            int stato = -3;
 
-            int stato = -2;
-
-            while (stato == -2)
+            if(true)
+            //if (_turno == _proprioTurno)
             {
-                if (mossa(colonna))
+                if (!mossa(colonna))
+                {
+                    stato = -2;
+                }
+                else
+                {
                     stato = -1;
-            }
 
-            verificaVittoria();
+                    verificaVittoria();
 
-            if (_mosseRimanenti <= 0 && _vincitore == 0)
-            {
-                stato = 0;
-            }
-            else if (_vincitore == 1)
-            {
-                stato = 1;
-            }
-            else if (_vincitore == 2)
-            {
-                stato = 2;
+                    if (_mosseRimanenti <= 0 && _vincitore == 0)
+                    {
+                        stato = 0;
+                    }
+                    else if (_vincitore == 1)
+                    {
+                        stato = 1;
+                    }
+                    else if (_vincitore == 2)
+                    {
+                        stato = 2;
+                    }
+                }
             }
             return stato;
         }

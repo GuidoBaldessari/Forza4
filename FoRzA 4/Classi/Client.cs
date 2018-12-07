@@ -4,7 +4,8 @@ namespace Forza4.Classi
 {
    public class Client : UdpBase
     {
-        private Client() { }
+        private Client() {
+        }
 
         public static Client ConnectTo(string hostname, int port)
         {
