@@ -51,6 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classi\Notifica.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Classi\UdpBase.cs" />
     <Compile Include="FormPrincipale.cs">
       <SubType>Form</SubType>
