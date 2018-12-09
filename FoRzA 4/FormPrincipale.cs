@@ -57,19 +57,19 @@ namespace Forza4
         Image PedinaVuota = FoRzA_4.Properties.Resources.Pedina_vuota;
 
         private int countPlayer;
-        public int CountPlayer
+        public int CountPlayer1
         {
             get { return countPlayer; }
             set { countPlayer = value; }
         }
         private int countAvv;
-        public int CountAvv
+        public int CountPlayer2
         {
             get { return countAvv; }
             set { countAvv = value; }
         }
 
-        public string turnoPlayer = "Me", turnoAvversario = "Avversario", stato = "wait";
+        public string turnoPlayer1 = "Me", turnoPlayer2 = "Avversario", stato = "wait";
         #endregion
 
         #region form principale
@@ -239,30 +239,27 @@ namespace Forza4
                 dgv.ColumnCount = colonne;
                 //aggiorna();                
             }
-
-
         }
         private void dgv_CellContentClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             //controlloVittoria();
-            situa = logica.eseguiMossa(e.ColumnIndex, logica.ProprioTurno);
-            aggiorna();
+            situa = logica.eseguiMossa(e.ColumnIndex, logica.ProprioTurno); 
 
             if(situa > -2) //La mossa viene inviata all'avversario solo se è il proprio turno e se la colonna non era piena
             {
                 msg = e.ColumnIndex.ToString() + "|";
                 socket.Send(Encoding.ASCII.GetBytes(msg));
             }
+            aggiorna();
 
-
-
+            //!!!Disabilitare il click nella datagridview per il turno dell'avversario!!!
         }
         private void CambiaTurnolbl()
         {
             if (logica.Turno == logica.ProprioTurno)
-                label3.Text = "Turno: " + turnoPlayer;
+                label3.Text = "Turno: " + turnoPlayer1;
             else
-                label3.Text = "Turno: " + turnoAvversario;
+                label3.Text = "Turno: " + turnoPlayer2;
             //Partita in corso
         }
         public void aggiornaGrafica()
@@ -284,26 +281,40 @@ namespace Forza4
             switch (situa)
             {
                 case -3:
-                    MessageBox.Show("Il turno è dell'avversario");
+                    MessageBox.Show("Tocca all'avversario!");
                     break;
                 case -2:
-                    MessageBox.Show("Colonna Piena:)");
+                    MessageBox.Show("Colonna Piena");
                     break;
                 case -1:
                     CambiaTurnolbl();
                     break;
                 case 0:
-                    MessageBox.Show("Pareggio :|");
-                    CountAvv++;
-                    CountPlayer++;
+                    MessageBox.Show("Pareggio!");
+                    CountPlayer1++;
+                    CountPlayer2++;
                     break;
                 case 1:
-                    MessageBox.Show("Giocatore 1 vince :)");
-                    CountPlayer++;
+                    if(logica.ProprioTurno == 1)
+                    {
+                        MessageBox.Show("Hai vinto!");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Hai perso :(");
+                    }
+                    CountPlayer1++;
                     break;
                 case 2:
-                    MessageBox.Show("Giocatore 2 vince :)");
-                    CountAvv++;
+                    if (logica.ProprioTurno == -1)
+                    {
+                        MessageBox.Show("Hai vinto!");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Hai perso :(");
+                    }
+                    CountPlayer2++;
                     break;
                 default:
                     break;
@@ -314,9 +325,22 @@ namespace Forza4
                 Reset();
             }
         }
+
+        private void FormPrincipale_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void Reset()
         {
+            int tmp = logica.ProprioTurno;
             logica = new Forza4Logic(righe, colonne);
+            logica.ProprioTurno = -tmp;
             situa = -4;
             aggiorna();
             CambiaTurnolbl();
