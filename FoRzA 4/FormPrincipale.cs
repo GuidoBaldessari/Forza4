@@ -155,7 +155,7 @@ namespace Forza4
             //AddToConsoleBox("Host thread started");
             logica.ProprioTurno = 1;
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddress = ipHostInfo.AddressList[3];
+            IPAddress ipAddress = ipHostInfo.AddressList[0];
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, porta);
             socket.Bind(localEndPoint);
             socket.Listen(1);
@@ -211,9 +211,9 @@ namespace Forza4
                 //
                 try
                 {
-                    int stato = logica.eseguiMossa(Convert.ToInt32(mossa[0]),-logica.ProprioTurno);
+                    situa = logica.eseguiMossa(Convert.ToInt32(mossa[0]),-logica.ProprioTurno);
                     aggiorna();
-                    Console.WriteLine(stato);
+                    Console.WriteLine(situa);
                 }
                 catch (Exception)
                 {
@@ -245,12 +245,16 @@ namespace Forza4
         private void dgv_CellContentClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             //controlloVittoria();
-             situa = logica.eseguiMossa(e.ColumnIndex, logica.ProprioTurno);            
-            msg = e.ColumnIndex.ToString()+"|";
-            socket.Send(Encoding.ASCII.GetBytes(msg));
-
+            situa = logica.eseguiMossa(e.ColumnIndex, logica.ProprioTurno);
             aggiorna();
-           
+
+            if(situa > -2) //La mossa viene inviata all'avversario solo se è il proprio turno e se la colonna non era piena
+            {
+                msg = e.ColumnIndex.ToString() + "|";
+                socket.Send(Encoding.ASCII.GetBytes(msg));
+            }
+
+
 
         }
         private void CambiaTurnolbl()
