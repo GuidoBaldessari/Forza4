@@ -18,8 +18,6 @@ namespace Forza4
             Application.SetCompatibleTextRenderingDefault(false);
             
                 Application.Run(new FormPrincipale());
-            
-            
         }
     }
 }

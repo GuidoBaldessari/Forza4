@@ -330,6 +330,7 @@ namespace Forza4
         #endregion
         public int eseguiMossa(int colonna, int turno)
         {
+            //-4 partita appena iniziata
             //-3 mossa non eseguita per turno sbagliato
             //-2 mossa non eseguita per colonna piena
             //-1 a partita in corso

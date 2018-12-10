@@ -24,7 +24,9 @@ namespace Forza4
         public int porta;
         Socket socket;
         string msg;
-        int situa;
+        System.Windows.Forms.Timer timerAttesaAvversario;
+
+        int stato;
         public Forza4Logic logica;
 
         private int righe;
@@ -69,10 +71,10 @@ namespace Forza4
             set { countAvv = value; }
         }
 
-        public string turnoPlayer1 = "Me", turnoPlayer2 = "Avversario", stato = "wait";
+        public string turnoPlayer1 = "Me", turnoPlayer2 = "Avversario";
         #endregion
 
-        #region form principale
+        #region Costruttore
         public FormPrincipale()
         {
 
@@ -88,12 +90,19 @@ namespace Forza4
 
             InitializeComponent();
 
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            System.Windows.Forms.Timer GameTimer = new System.Windows.Forms.Timer();
-            GameTimer.Interval = 200;
-            GameTimer.Tick += new EventHandler(GameTick);
-            GameTimer.Start();
+            dgv.Size = new Size(larghezzaPedina * colonne, altezzaPedina * righe);
+            dgv.RowTemplate.Height = altezzaPedina;
+            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            //this.label3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            dgv.RowCount = righe;
+            dgv.ColumnCount = colonne;
 
+            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            timerAttesaAvversario = new System.Windows.Forms.Timer();
+            timerAttesaAvversario.Interval = 200;
+            timerAttesaAvversario.Tick += new EventHandler(TimerTick);
+            
+            
             login();
 
         }
@@ -126,17 +135,19 @@ namespace Forza4
                     t = new Thread(JoinerThread);
                 }
                 t.Start();
+                timerAttesaAvversario.Start();
             }
             else //se viene chiuso il form del login si chiude tutto e bom
             {
                 this.Close();
+                timerAttesaAvversario.Stop();
             }
         }
         #endregion
 
         #region Comunicazione
-
-        public string GetLocalIPAddress()
+        //MAI USATO
+        /*public string GetLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (var ip in host.AddressList)
@@ -147,33 +158,34 @@ namespace Forza4
                 }
             }
             throw new Exception("No network adapters with an IPv4 address in the system!");
-        }
+        }*/
 
 
         public void HostThread()
         {
             //AddToConsoleBox("Host thread started");
-            logica.ProprioTurno = 1;
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            
+            //IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+            //IPAddress ipAddress = ipHostInfo.AddressList[0];
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, porta);
             socket.Bind(localEndPoint);
             socket.Listen(1);
             socket = socket.Accept();
             //AddToConsoleBox("Checkpoint 0");
-            stato = "game";
+            logica.ProprioTurno = 1;
+            stato = -4;
 
             GetChanges();
         }
         public void JoinerThread()
         {
-            logica.ProprioTurno = -1;
             //ConsoleBox.Items.Add("Joiner thread started");
             IPEndPoint remoteEP = new IPEndPoint(ip, porta);
             socket.Connect(remoteEP);
 
             //AddToConsoleBox("Checkpoint 0");
-            stato = "game";
+            logica.ProprioTurno = -1;
+            stato = -4;
             //Console.WriteLine(GetLocalIPAddress());
             //byte[] msg = Encoding.ASCII.GetBytes(GetLocalIPAddress());
             //int bytesSent = socket.Send(msg);
@@ -200,25 +212,15 @@ namespace Forza4
                         break;
                     }
                 }
-                //DEBUGGING
-                /*foreach (var item in mossa)
-                {
-                    Console.Write(item.ToString());
-                    Console.WriteLine("\n");
-                }*/
-                
-                //logica.stampaCampo();
-                //
                 try
                 {
-                    situa = logica.eseguiMossa(Convert.ToInt32(mossa[0]),-logica.ProprioTurno);
+                    stato = logica.eseguiMossa(Convert.ToInt32(mossa[0]),-logica.ProprioTurno);
                     aggiorna();
-                    Console.WriteLine(situa);
+                    Console.WriteLine(stato);
                 }
                 catch (Exception)
                 {
-
-                    //Console.WriteLine("Non una colonna");
+                    //throw new Exception("Errore nella comunicazione");
                 }
             }
         }//legge finchè non trova |
@@ -226,26 +228,24 @@ namespace Forza4
         #endregion
 
         #region logica
-        public void GameTick(object sender, EventArgs e)
+        public void TimerTick(object sender, EventArgs e)
         {
-            if (stato == "game")
+            //Entrambi gli host sono connessi e la partita inizia
+            if (stato == -4)
             {                
                 label4.Visible = false;
-                dgv.Size = new System.Drawing.Size(larghezzaPedina * colonne, altezzaPedina * righe);
-                this.dgv.RowTemplate.Height = altezzaPedina; //
-                this.dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-                this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-                dgv.RowCount = righe;
-                dgv.ColumnCount = colonne;
+                dgv.Visible = true;
+                timerAttesaAvversario.Stop();
                 //aggiorna();                
             }
         }
+
         private void dgv_CellContentClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            //controlloVittoria();
-            situa = logica.eseguiMossa(e.ColumnIndex, logica.ProprioTurno); 
+            stato = logica.eseguiMossa(e.ColumnIndex, logica.ProprioTurno);
+            //La mossa viene inviata all'avversario solo se è il proprio turno e se la colonna non era piena
 
-            if(situa > -2) //La mossa viene inviata all'avversario solo se è il proprio turno e se la colonna non era piena
+            if (stato >= -1) 
             {
                 msg = e.ColumnIndex.ToString() + "|";
                 socket.Send(Encoding.ASCII.GetBytes(msg));
@@ -260,7 +260,6 @@ namespace Forza4
                 label3.Text = "Turno: " + turnoPlayer1;
             else
                 label3.Text = "Turno: " + turnoPlayer2;
-            //Partita in corso
         }
         public void aggiornaGrafica()
         {
@@ -273,46 +272,86 @@ namespace Forza4
             }
             //ColoraCelle();
         }
-
         public void aggiorna()
         {
+            //LEGENDA DI STATO
+                //-4 partita appena iniziata
+                //-3 mossa non eseguita per turno sbagliato
+                //-2 mossa non eseguita per colonna piena
+                //-1 a partita in corso
+
+                //0 pareggio
+                //1 vittoria giocatore 1
+                //2 vittoria giocatore 2
+
+            Point position = new Point(this.Left + this.Width / 2, this.Top + this.Height / 2);
+
+            Notifica notifica;
             aggiornaGrafica();
 
-            switch (situa)
+            switch (stato)
             {
+                case -4:
+                    //MessageBox.Show("Tocca all'avversario!");
+
+                    //SI BUGGA PER QUALCHE MOTIVO
+                    /*if(logica.ProprioTurno == logica.Turno)
+                    {
+                        notifica = new Notifica("E' il tuo turno!", 3, position);
+                    }
+                    else
+                    {
+                        notifica = new Notifica("Tocca all'avversario", 3, position);
+                    }
+                    notifica.Show();*/
+                    break;
                 case -3:
-                    MessageBox.Show("Tocca all'avversario!");
+                    //MessageBox.Show("Tocca all'avversario!");
+                    notifica = new Notifica("Tocca all'avversario", 3, position);
+                    notifica.Show();
                     break;
                 case -2:
-                    MessageBox.Show("Colonna Piena");
+                    //MessageBox.Show("Colonna Piena");
+                    notifica = new Notifica("Colonna Piena!", 3, position);
+                    notifica.Show();
                     break;
                 case -1:
                     CambiaTurnolbl();
                     break;
                 case 0:
-                    MessageBox.Show("Pareggio!");
+                    //MessageBox.Show("Pareggio!");
+                    notifica = new Notifica("Pareggio!", 3, position);
+                    notifica.Show();
                     CountPlayer1++;
                     CountPlayer2++;
                     break;
                 case 1:
                     if(logica.ProprioTurno == 1)
                     {
-                        MessageBox.Show("Hai vinto!");
+                        //MessageBox.Show("Hai vinto!");
+                        notifica = new Notifica("Hai vinto :)", 10, position);
+                        notifica.Show();
                     }
-                    else
+                    else if(logica.ProprioTurno == -1)
                     {
-                        MessageBox.Show("Hai perso :(");
+                        //MessageBox.Show("Hai perso :(");
+                        //notifica = new Notifica("Hai perso :(", 10, position);
+                        //notifica.Show();
                     }
                     CountPlayer1++;
                     break;
                 case 2:
                     if (logica.ProprioTurno == -1)
                     {
-                        MessageBox.Show("Hai vinto!");
+                        //MessageBox.Show("Hai vinto!");
+                        notifica = new Notifica("Hai vinto :)", 10, position);
+                        notifica.Show();
                     }
-                    else
+                    else if (logica.ProprioTurno == 1)
                     {
-                        MessageBox.Show("Hai perso :(");
+                        //MessageBox.Show("Hai perso :(");
+                        //notifica = new Notifica("Hai perso :(", 10, position);
+                        //notifica.Show();
                     }
                     CountPlayer2++;
                     break;
@@ -320,28 +359,17 @@ namespace Forza4
                     break;
             }
 
-            if (situa >= 0)
+            if (stato >= 0)
             {
                 Reset();
             }
         }
-
-        private void FormPrincipale_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void Reset()
         {
             int tmp = logica.ProprioTurno;
             logica = new Forza4Logic(righe, colonne);
             logica.ProprioTurno = -tmp;
-            situa = -4;
+            stato = -4;
             aggiorna();
             CambiaTurnolbl();
         }

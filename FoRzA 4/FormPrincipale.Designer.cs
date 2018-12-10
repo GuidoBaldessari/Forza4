@@ -43,7 +43,7 @@ namespace Forza4
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(761, 87);
+            this.label1.Location = new System.Drawing.Point(580, 87);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(34, 13);
@@ -54,7 +54,7 @@ namespace Forza4
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(761, 113);
+            this.label2.Location = new System.Drawing.Point(580, 113);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(69, 13);
@@ -78,6 +78,7 @@ namespace Forza4
             this.dgv.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.dgv.Size = new System.Drawing.Size(240, 150);
             this.dgv.TabIndex = 2;
+            this.dgv.Visible = false;
             this.dgv.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_CellContentClick);
             this.dgv.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.dgv_CellPainting);
             // 
@@ -85,7 +86,7 @@ namespace Forza4
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(761, 37);
+            this.label3.Location = new System.Drawing.Point(580, 37);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(56, 13);
@@ -100,14 +101,13 @@ namespace Forza4
             this.label4.Size = new System.Drawing.Size(215, 13);
             this.label4.TabIndex = 4;
             this.label4.Text = "In attesa della connessione dell\'avversario...";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // FormPrincipale
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(962, 625);
+            this.ClientSize = new System.Drawing.Size(781, 393);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.dgv);
@@ -118,7 +118,6 @@ namespace Forza4
             this.Name = "FormPrincipale";
             this.StartPosition = System.Windows.Forms.FormStartPosition.WindowsDefaultBounds;
             this.Text = "Forza 4";
-            this.Load += new System.EventHandler(this.FormPrincipale_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormPrincipale_KeyPress);
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).EndInit();
             this.ResumeLayout(false);

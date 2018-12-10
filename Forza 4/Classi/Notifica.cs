@@ -11,11 +11,12 @@ namespace Forza4
 {
     class Notifica : Form
     {
+        
         private PictureBox pictureBox1;
         private Label label1;
         private int x;
         private int y;
-        private int time;
+        private double time;
         private Timer timer = new Timer();
         #region stonda bordi
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
@@ -29,30 +30,33 @@ namespace Forza4
          int nHeightEllipse // width of ellipse
      );
         #endregion       
-        public Notifica(string text, int second, Point point)
+        public Notifica(string text, double duration, Point position)
         {
             InitializeComponent(text);
             this.FormBorderStyle = FormBorderStyle.None;
             Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 20, 20));
-            time = second;
-            timer.Interval = 70;
+            time = duration;
+            timer.Interval = 10;
             timer.Tick += Timer_Tick;
             timer.Start();
-            x = point.X;
-            y = point.Y;
+            x = position.X - this.Width/2;
+            y = position.Y - this.Height/2;
             Load += new EventHandler(Caricamento);
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
 
-            if (this.Opacity > 5)
+            if (this.Opacity > 0.1)
             {
-                this.Close();
+                //this.Opacity -= 0.0125;
+                this.Opacity -= time/1000;
+                
             }
             else
             {
-                Opacity = Opacity - 0.025;//no.
+                timer.Stop();
+                this.Close();
             }
 
         }
