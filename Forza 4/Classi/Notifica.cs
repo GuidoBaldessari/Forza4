@@ -16,8 +16,8 @@ namespace Forza4
         private Label label1;
         private int x;
         private int y;
-        private double time;
-        private Timer timer = new Timer();
+        private double duration;
+        private Timer timer;
         #region stonda bordi
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
         private static extern IntPtr CreateRoundRectRgn
@@ -30,39 +30,44 @@ namespace Forza4
          int nHeightEllipse // width of ellipse
      );
         #endregion       
-        public Notifica(string text, double duration, Point position)
+        public Notifica(string text, double durata, Point position)
         {
             InitializeComponent(text);
             this.FormBorderStyle = FormBorderStyle.None;
             Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 20, 20));
-            time = duration;
-            timer.Interval = 10;
+            duration = durata;
+
+            timer = new Timer();
+            timer.Interval = 100;
             timer.Tick += Timer_Tick;
             timer.Start();
+            
             x = position.X - this.Width/2;
             y = position.Y - this.Height/2;
             Load += new EventHandler(Caricamento);
+            this.Show();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-
-            if (this.Opacity > 0.1)
+            if (this.Opacity > 0.01)
             {
                 //this.Opacity -= 0.0125;
-                this.Opacity -= time/1000;
-                
+                this.Opacity -= duration/100;   
             }
             else
             {
                 timer.Stop();
                 this.Close();
+                this.Dispose();
             }
 
         }
         private void Caricamento(object sender, EventArgs e)
         {
             this.SetDesktopLocation(x, y);
+            
+            
         }
         private void InitializeComponent(string text)
         {

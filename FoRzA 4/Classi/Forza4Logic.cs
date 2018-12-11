@@ -159,9 +159,7 @@ namespace Forza4
                 {
                     riga--; //Altrimenti alzati di una riga e riprova
                 }
-
             }
-
             return esitoMossa;
         }
         public bool annullaMossa()
