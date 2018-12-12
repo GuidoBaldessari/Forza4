@@ -86,3 +86,4 @@ C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\Forza4\FoRzA 4\o
 C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\Forza4\FoRzA 4\obj\Debug\Forza4.csproj.CoreCompileInputs.cache
 C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\Forza4\FoRzA 4\obj\Debug\FoRzA 4.exe
 C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\Forza4\FoRzA 4\obj\Debug\FoRzA 4.pdb
+C:\Users\Guido\Documents\Scuola\2018-2019\Tecnologie\Forza4 UDP\Forza4\FoRzA 4\obj\Debug\Forza4.Notifica.resources

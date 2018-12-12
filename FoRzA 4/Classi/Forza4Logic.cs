@@ -113,20 +113,6 @@ namespace Forza4
                 }
             }
         }
-
-        public void stampaCampo() //Stampa il campo, inutile in visuale. Utile solo a scopo di debug
-        {
-                Console.WriteLine("---------------------------------------------");
-            for (int i = 0; i < _righe; i++)
-            {
-                for (int j = 0; j < _colonne; j++)
-                {
-                    Console.Write(_campo[i, j] + "|\t|");
-                }
-                Console.WriteLine();
-            }
-            Console.WriteLine("---------------------------------------------");
-        }
         protected bool mossa(int colonna) //Metodo per effettuare una mossa in una colonna non piena e calcolare la riga in cui si fermetà il gettone
         {
             bool esitoMossa = false;
@@ -162,7 +148,7 @@ namespace Forza4
             }
             return esitoMossa;
         }
-        public bool annullaMossa()
+        private bool annullaMossa()
         {
             bool esito = false;
             if (_campo[_ultimaRigaMossa, _ultimaColonnaMossa] != 0)
@@ -171,17 +157,12 @@ namespace Forza4
                 _mosseRimanenti++;
                 esito = true;
             }
-
             return esito;
         }
 
         #region Verifica Possibili situazioni di vittoria
         protected void verificaVittoria()
         {
-            //Verifica delle vittorie possibili 
-            //La sequenza che porta alla vittoria comprende sicuramente la posizione dell'ultima mossa
-            //Pertanto si calcola l'intervallo delle celle in cui può esserci una sequenza vincente, che comprende l'ultima mossa effettuata
-
             int focalRow = _ultimaRigaMossa, focalCol = _ultimaColonnaMossa; //Ultimo gettobe aggiunto, se esiste un segmento vincente, passa sicuramente per questo punto
 
             int maxRow = Math.Min(_righe - 1, focalRow + 3); //Riga più in basso in cui può esserci una sequenza vincente
@@ -190,21 +171,28 @@ namespace Forza4
             int minRow = Math.Max(0, focalRow - 3); //Riga di limite più alto in cui può una sequenza vincente
             int maxCol = Math.Min(_colonne - 1, focalCol + 3);//Colonna più a destra in cui può esserci una sequenza vincente
 
-            //I 4 metodi usano la stessa logica
-            //SequenzaVincente è un è un list che contiene le varie somme, se un elemento è 4 o -4, allora uno dei giocatori ha vinto la partita.
+
+            //Verifica delle vittorie possibili 
+            //La sequenza che porta alla vittoria comprende sicuramente la posizione dell'ultima mossa
+            //Pertanto si calcola l'intervallo delle celle in cui può esserci una sequenza vincente, che comprende l'ultima mossa effettuata
+
+            //Se si trova una sequenza vincente, allora non si continua a cercare il vincitore
             vittoriaOrizzontale(focalRow, minCol, maxCol);
-            vittoriaVerticale(focalCol, minRow, maxRow);
 
-            vittoriaObliquaSX(focalRow, focalCol, minRow, minCol);
-            vittoriaObliquaDX(focalRow, focalCol, maxCol, minRow);
+            if (_vincitore == 0)
+                vittoriaVerticale(focalCol, minRow, maxRow);
 
+            if (_vincitore == 0)
+                vittoriaObliquaSX(focalRow, focalCol, minRow, minCol);
+
+            if (_vincitore == 0)
+                vittoriaObliquaDX(focalRow, focalCol, maxCol, minRow);
         }
         protected void vittoriaOrizzontale(int focalRow, int minCol, int maxCol)
         {
-            //int sommaSegmento = 0; //Indica una sequenza di vittoria se è maggiore o uguale a 4
             int col = minCol, sommaSegmento = 0;
 
-            while (col <= maxCol - 3 && _vincitore <= 0)
+            while (col <= maxCol - 3 && _vincitore == 0)
             {
                 sommaSegmento = _campo[focalRow, col] + _campo[focalRow, col + 1] + _campo[focalRow, col + 2] + _campo[focalRow, col + 3];
 
@@ -214,7 +202,7 @@ namespace Forza4
                 }
                 else if (sommaSegmento <= -4)
                 {
-                    _vincitore = 2;
+                    _vincitore = -1;
                 }
                 else
                 {
@@ -224,11 +212,9 @@ namespace Forza4
         }
         protected void vittoriaVerticale(int focalCol, int minRow, int maxRow)
         {
-            //int sommaSegmento = 0; //Sommavittoria indica una vittoria se è maggiore o uguale a 4
-
             int row = maxRow, sommaSegmento = 0;
 
-            while (row >= minRow + 3 && _vincitore <= 0)
+            while (row >= minRow + 3 && _vincitore == 0)
             {
                 sommaSegmento = _campo[row, focalCol] + _campo[row - 1, focalCol] + _campo[row - 2, focalCol] + _campo[row - 3, focalCol];
                 if (sommaSegmento >= 4)
@@ -237,19 +223,16 @@ namespace Forza4
                 }
                 else if (sommaSegmento <= -4)
                 {
-                    _vincitore = 2;
+                    _vincitore = -1;
                 }
                 else
                 {
                     row--;
                 }
-
             }
         }
         protected void vittoriaObliquaSX(int focalRow, int focalCol, int minRow, int minCol)
         {
-            //int sommaSegmento = 0; //Sommavittoria indica una vittoria se è maggiore o uguale a 4
-
             int maxRow = focalRow;
             int maxCol = focalCol;
 
@@ -265,7 +248,7 @@ namespace Forza4
 
             int row = maxRow, col = maxCol, sommaSegmento = 0;
 
-            while (row >= minRow + 3 && col >= minCol + 3 && _vincitore <= 0)
+            while (row >= minRow + 3 && col >= minCol + 3 && _vincitore == 0)
             {
                 sommaSegmento = _campo[row, col] + _campo[row - 1, col - 1] + _campo[row - 2, col - 2] + _campo[row - 3, col - 3];
 
@@ -275,7 +258,7 @@ namespace Forza4
                 }
                 else if (sommaSegmento <= -4)
                 {
-                    _vincitore = 2;
+                    _vincitore = -1;
                 }
                 else
                 {
@@ -288,7 +271,6 @@ namespace Forza4
         }
         protected void vittoriaObliquaDX(int focalRow, int focalCol, int maxCol, int minRow)
         {
-
             int maxRow = focalRow;
             int minCol = focalCol;
 
@@ -304,7 +286,7 @@ namespace Forza4
 
             int row = maxRow, col = minCol, sommaSegmento = 0;
 
-            while (row >= minRow + 3 && col <= maxCol - 3 && _vincitore <= 0)
+            while (row >= minRow + 3 && col <= maxCol - 3 && _vincitore == 0)
             {
                 sommaSegmento = _campo[row, col] + _campo[row - 1, col + 1] + _campo[row - 2, col + 2] + _campo[row - 3, col + 3];
 
@@ -314,7 +296,7 @@ namespace Forza4
                 }
                 else if (sommaSegmento <= -4)
                 {
-                    _vincitore = 2;
+                    _vincitore = -1;
                 }
                 else
                 {
@@ -323,10 +305,9 @@ namespace Forza4
                 }
 
             }
-
         }
         #endregion
-        public int eseguiMossa(int colonna, int turno)
+        public int eseguiMossa(int colonna, int proprioTurno)
         {
             //-4 partita appena iniziata
             //-3 mossa non eseguita per turno sbagliato
@@ -334,12 +315,12 @@ namespace Forza4
             //-1 a partita in corso
 
             //0 pareggio
-            //1 vittoria giocatore 1
-            //2 vittoria giocatore 2
+            //1 vittoria
+            //2 sconfitta
             int stato = -3;
 
             //if(true)
-            if (_turno == turno)
+            if (_turno == proprioTurno)
             {
                 if (!mossa(colonna))
                 {
@@ -355,11 +336,11 @@ namespace Forza4
                     {
                         stato = 0;
                     }
-                    else if (_vincitore == 1)
+                    else if (_vincitore == _proprioTurno)
                     {
                         stato = 1;
                     }
-                    else if (_vincitore == 2)
+                    else if(_vincitore == -_proprioTurno)
                     {
                         stato = 2;
                     }

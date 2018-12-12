@@ -12,7 +12,7 @@ namespace Forza4
     class Notifica : Form
     {
         
-        private PictureBox pictureBox1;
+        //private PictureBox pictureBox1;
         private Label label1;
         private int x;
         private int y;
@@ -33,6 +33,7 @@ namespace Forza4
         public Notifica(string text, double durata, Point position)
         {
             InitializeComponent(text);
+            this.label1.Text = text;
             this.FormBorderStyle = FormBorderStyle.None;
             Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 20, 20));
             duration = durata;
@@ -40,11 +41,13 @@ namespace Forza4
             timer = new Timer();
             timer.Interval = 100;
             timer.Tick += Timer_Tick;
+
             timer.Start();
-            
+
             x = position.X - this.Width/2;
             y = position.Y - this.Height/2;
             Load += new EventHandler(Caricamento);
+
             this.Show();
         }
 
@@ -66,50 +69,51 @@ namespace Forza4
         private void Caricamento(object sender, EventArgs e)
         {
             this.SetDesktopLocation(x, y);
+
             
-            
+
         }
         private void InitializeComponent(string text)
         {
             ShowInTaskbar = false;
             TopMost = true;
-            this.label1 = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.label1 = new Label();
+            //this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            //((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
+            //this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            //| System.Windows.Forms.AnchorStyles.Left)
+            //| System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(44, 14);
             this.label1.Text = text;
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(0, 17);
-            this.label1.TabIndex = 0;
+            //this.label1.TabIndex = 0;
             // 
             // pictureBox1
             // 
             //this.pictureBox1.Image = global::DemoChatForm.Properties.Resources.info;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 14);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(26, 26);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 1;
-            this.pictureBox1.TabStop = false;
+            //this.pictureBox1.Location = new System.Drawing.Point(12, 14);
+            //this.pictureBox1.Name = "pictureBox1";
+            //this.pictureBox1.Size = new System.Drawing.Size(26, 26);
+            //this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            //this.pictureBox1.TabIndex = 1;
+            //this.pictureBox1.TabStop = false;
             // 
             // Notifica
             // 
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(282, 52);
-            this.Controls.Add(this.pictureBox1);
+            //this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Notifica";
             this.TopMost = true;
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            //((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
