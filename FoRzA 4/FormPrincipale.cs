@@ -19,6 +19,9 @@ namespace Forza4
 {
     public partial class FormPrincipale : Form
     {
+        BackgroundWorker worker = new BackgroundWorker();
+        private delegate void DELEGATE();
+
         #region variabili e proprietà
         IPAddress ip;
         public int porta;
@@ -77,6 +80,7 @@ namespace Forza4
         #region Costruttore
         public FormPrincipale()
         {
+            InitializeComponent();
             righe = 6;
             colonne = 7;
             larghezzaPedina = 100;
@@ -87,7 +91,7 @@ namespace Forza4
 
             logica = new Forza4Logic(righe, colonne);
 
-            InitializeComponent();
+            
 
             dgv.Size = new Size(larghezzaPedina * colonne, altezzaPedina * righe);
             dgv.RowTemplate.Height = altezzaPedina;
@@ -98,13 +102,18 @@ namespace Forza4
 
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
+
+            nuovaConnessione();
+
+
+            login();
+        }
+
+        private void nuovaConnessione()
+        {
             timerAttesaAvversario = new System.Windows.Forms.Timer();
             timerAttesaAvversario.Interval = 200;
             timerAttesaAvversario.Tick += new EventHandler(TimerTick);
-            
-            
-            login();
-
         }
 
         private void FormPrincipale_KeyPress(object sender, KeyEventArgs e) // da togliere nella release, nel designer ho aggiunto this.KeyDown = true; per il controllo tasti
@@ -112,7 +121,7 @@ namespace Forza4
             if (e.Control && e.Alt && e.KeyCode == Keys.R)       // Ctrl-S Save
             {
                 logica.Turno = 1;
-                Reset();
+                restart();
                 e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
             }
         }
@@ -169,10 +178,14 @@ namespace Forza4
             socket.Listen(1);
             socket = socket.Accept();
             //AddToConsoleBox("Checkpoint 0");
-            logica.ProprioTurno = 1;
             stato = -4;
+            logica.ProprioTurno = 1;
+
 
             GetChanges();
+
+
+
         }
         public void JoinerThread()
         {
@@ -181,12 +194,15 @@ namespace Forza4
             socket.Connect(remoteEP);
 
             //AddToConsoleBox("Checkpoint 0");
-            logica.ProprioTurno = -1;
             stato = -4;
+            logica.ProprioTurno = -1;
+
             //Console.WriteLine(GetLocalIPAddress());
             //byte[] msg = Encoding.ASCII.GetBytes(GetLocalIPAddress());
             //int bytesSent = socket.Send(msg);
             GetChanges();
+           
+
         }
         public void TimerTick(object sender, EventArgs e)
         {
@@ -195,6 +211,7 @@ namespace Forza4
             {
                 label4.Visible = false;
                 dgv.Visible = true;
+                btnRestart.Visible = false;
                 timerAttesaAvversario.Stop();
                 //aggiorna();                
             }
@@ -204,12 +221,17 @@ namespace Forza4
 
         #region Partita
 
+        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Delegate del = new DELEGATE(aggiorna);
+            this.Invoke(del);
+        }
+
 
         private void dgv_CellContentClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             stato = logica.eseguiMossa(e.ColumnIndex, logica.ProprioTurno);
             
-
             //La mossa viene inviata all'avversario solo se è il proprio turno e se la colonna non era piena
             if (stato >= -1)
             {
@@ -221,6 +243,7 @@ namespace Forza4
         }
         public void GetChanges()
         {
+            worker.DoWork += worker_DoWork;
             while (true)
             {
                 string data = null;
@@ -241,26 +264,25 @@ namespace Forza4
                 try
                 {
                     stato = logica.eseguiMossa(Convert.ToInt32(campi[0]), -logica.ProprioTurno);
-                    aggiorna();
-                    //Console.WriteLine(stato);
                 }
                 catch (Exception)
                 {
                     throw new Exception("Errore nella comunicazione");
                 }
+                worker.RunWorkerAsync();
             }
         }//legge finchè non trova |
         public void aggiorna()
         {
             //LEGENDA DI STATO
-                //-4 partita appena iniziata
-                //-3 mossa non eseguita per turno sbagliato
-                //-2 mossa non eseguita per colonna piena
-                //-1 a partita in corso
+            //-4 partita appena iniziata
+            //-3 mossa non eseguita per turno sbagliato
+            //-2 mossa non eseguita per colonna piena
+            //-1 a partita in corso
 
-                //0 pareggio
-                //1 vittoria giocatore 1
-                //2 vittoria giocatore 2
+            //0 pareggio
+            //1 vittoria giocatore 1
+            //2 vittoria giocatore 2
             aggiornaGrafica();
 
             Point position = new Point(this.Left + this.Width / 2, this.Top + this.Height / 2);
@@ -270,20 +292,14 @@ namespace Forza4
             switch (stato)
             {
                 case -4:
-                   /*
-                    //MessageBox.Show("Tocca all'avversario!");
-
-                    //SI BUGGA PER QUALCHE MOTIVO
                     if(logica.ProprioTurno == logica.Turno)
                     {
                         notifica = new Notifica("E' il tuo turno!", 3, position);
-                        //notifica.Show();
                     }
                     else
                     {
                         notifica = new Notifica("Tocca all'avversario", 3, position);
-                        //notifica.Show();
-                    }*/
+                    }
                     break;
                 case -3:
                     notifica = new Notifica("Tocca all'avversario", 3, position);
@@ -292,48 +308,51 @@ namespace Forza4
                     notifica = new Notifica("Colonna Piena!", 3, position);
                     break;
                 case -1:
-                    //CambiaTurnolbl();
+                    CambiaTurnolbl();
                     break;
                 case 0:
-                    //notifica = new Notifica("Pareggio!", 3, position);
-                    MessageBox.Show("Pareggio!");
-                    //Reset();
+                    notifica = new Notifica("Pareggio!", 3, position);
+                    btnRestart.Visible = true;
+                    dgv.Visible = false;
                     break;
                 case 1:
-                    //notifica = new Notifica("Hai vinto :)", 3, position);
-                    MessageBox.Show("Hai vinto :(");
+                    notifica = new Notifica("Hai vinto :)", 3, position);
                     vittoreMie++;
-                    //Reset();
+                    btnRestart.Visible = true;
+                    dgv.Visible = false;
                     break;
                 case 2:
-                    //notifica = new Notifica("Hai perso :(", 3, position);
-                    MessageBox.Show("Hai perso :(");
+                    notifica = new Notifica("Hai perso :(", 3, position);
                     vittorieAvversario++;
-                    //Reset();
+                    btnRestart.Visible = true;
+                    dgv.Visible = false;
                     break;
             }
         }
 
-        private void Reset()
+        private void restart()
         {
             int tmp = logica.ProprioTurno;
             logica = new Forza4Logic(righe, colonne);
             logica.ProprioTurno = -tmp;
+
             stato = -4;
+
+
             aggiorna();
             //CambiaTurnolbl();
         }
         private void btnRestart_Click(object sender, EventArgs e)
         {
-            //Reset();
+            restart();
         }
-        /*private void CambiaTurnolbl()
+        private void CambiaTurnolbl()
         {
             if (logica.Turno == logica.ProprioTurno)
                 label3.Text = "Turno: " + turnoPlayer1;
             else
                 label3.Text = "Turno: " + turnoPlayer2;
-        }*/
+        }
         public void aggiornaGrafica()
         {
             for (int i = 0; i < righe; i++)
