@@ -12,6 +12,8 @@ using Forza4.Classi;
 using System.Net;
 using System.Threading;
 using System.Net.Sockets;
+using System.Net.NetworkInformation;
+using System.Collections;
 
 namespace Forza4.forms
 {
@@ -22,13 +24,30 @@ namespace Forza4.forms
        public IPAddress ip;
         public int port;
         public string mode = "host";
-        public bool PortaOkay = true;
+        public bool portaa = true;
         private bool errore = false;
-#endregion
+        List<string> usedPort = new List<string>();
+        #endregion
         public Log()
         {
             InitializeComponent();
-        }        
+            label1.Text = "Current ip: " + GetLocalIPAddress();
+
+
+
+        }
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
         private void Start_Click(object sender, EventArgs e)
         {
             if (Controllo_Start())
@@ -61,7 +80,7 @@ namespace Forza4.forms
         }
         private bool Controllo_Start()
         {
-            if (PortaOkay && txt_Username.Text != "" )
+            if (portaa && txt_Username.Text != "" )
             {               
                 if (RB_Host.Checked)
                 {
@@ -85,9 +104,8 @@ namespace Forza4.forms
             {
                 return false;
             }
-        }
-
-    
+        }    
+ 
         private bool controlloIP(string IPdaControllare)
         {
             IPAddress coso;
@@ -108,8 +126,7 @@ namespace Forza4.forms
             {
                 return false;
             }            
-        }             
-        
+        }                     
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             txt_IP.Enabled = !txt_IP.Enabled;
@@ -123,21 +140,19 @@ namespace Forza4.forms
                 button1.Text = "Start";
             }
         }
-
         private void txt_Porta_TextChanged(object sender, EventArgs e)
         {
-            if (txt_Porta.Text.Trim().Length > 0 && Int32.TryParse(txt_Porta.Text, out port)/*&& port >= 49152 && port <= 65535*/ )
+            if (txt_Porta.Text.Trim().Length > 0 && Int32.TryParse(txt_Porta.Text, out port)&& port >= 49152 && port <= 65535 || port == 42069)
             {
                 txt_Porta.ForeColor = Color.Black;
-                PortaOkay = true;
+                portaa = true;
             }
             else
             {
-                PortaOkay = false;
+                portaa = false;
                 txt_Porta.ForeColor = Color.Red;               
             }
         }
-
         private void RB_Join_CheckedChanged(object sender, EventArgs e)
         {
 

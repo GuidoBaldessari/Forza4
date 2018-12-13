@@ -20,3 +20,4 @@ C:\Users\Marco Andreatta\Desktop\Forza4\FoRzA 4\obj\Release\Forza4.csproj.Genera
 C:\Users\Marco Andreatta\Desktop\Forza4\FoRzA 4\obj\Release\Forza4.csproj.CoreCompileInputs.cache
 C:\Users\Marco Andreatta\Desktop\Forza4\FoRzA 4\obj\Release\FoRzA 4.exe
 C:\Users\Marco Andreatta\Desktop\Forza4\FoRzA 4\obj\Release\FoRzA 4.pdb
+C:\Users\Marco Andreatta\Desktop\Forza4\FoRzA 4\obj\Release\Forza4.csprojAssemblyReference.cache

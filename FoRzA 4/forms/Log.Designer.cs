@@ -39,6 +39,7 @@
             this.RB_Host = new System.Windows.Forms.RadioButton();
             this.txt_Porta = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -152,15 +153,26 @@
             this.label3.Location = new System.Drawing.Point(177, 40);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(34, 17);
+            this.label3.Size = new System.Drawing.Size(148, 17);
             this.label3.TabIndex = 3;
-            this.label3.Text = "Port";
+            this.label3.Text = "Port (49152 to 65535)";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label1.Location = new System.Drawing.Point(25, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(46, 17);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "label1";
             // 
             // Log
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(347, 306);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txt_Porta);
             this.Controls.Add(this.groupBox1);
@@ -190,6 +202,7 @@
         private System.Windows.Forms.RadioButton RB_Host;
         private System.Windows.Forms.TextBox txt_Porta;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label1;
     }
 }
 
