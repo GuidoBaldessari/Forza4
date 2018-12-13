@@ -19,8 +19,7 @@ namespace Forza4
 {
     public partial class FormPrincipale : Form
     {
-        BackgroundWorker worker = new BackgroundWorker();
-        private delegate void DELEGATE();
+
 
         #region variabili e proprietà
         IPAddress ip;
@@ -28,8 +27,11 @@ namespace Forza4
         Socket socket;
 
         System.Windows.Forms.Timer timerAttesaAvversario;
+        BackgroundWorker worker = new BackgroundWorker();
+        private delegate void DELEGATE();
 
-        int stato = -4;
+
+        int stato;
         public Forza4Logic logica;
 
         private int righe;
@@ -60,15 +62,17 @@ namespace Forza4
         Image PedinaPlayer = FoRzA_4.Properties.Resources.Pedina_1;
         Image PedinaAvversario = FoRzA_4.Properties.Resources.Pedina__1;
         Image PedinaVuota = FoRzA_4.Properties.Resources.Pedina_vuota;
-        Color coloreMio = Color.FromArgb(76, 255, 0), coloreAvv = Color.Red;
+
+        Color proprioSfondo, sfondoDefault = Color.FromArgb(0, 111, 244);
+        Color sfondoVerde = Color.FromArgb(76, 255, 0), sfondoRosso = Color.FromArgb(255, 4, 0);
         private int countPlayer;
-        public int vittoreMie
+        public int CountPlayer
         {
             get { return countPlayer; }
             set { countPlayer = value; }
         }
         private int countAvv;
-        public int vittorieAvversario
+        public int CountAvv
         {
             get { return countAvv; }
             set { countAvv = value; }
@@ -81,6 +85,7 @@ namespace Forza4
         public FormPrincipale()
         {
             InitializeComponent();
+
             righe = 6;
             colonne = 7;
             larghezzaPedina = 100;
@@ -91,33 +96,34 @@ namespace Forza4
 
             logica = new Forza4Logic(righe, colonne);
 
+            this.BackColor = sfondoDefault;
 
-            this.dgv.Location = new System.Drawing.Point(30, 50);
-            label3.Location = new System.Drawing.Point(dgv.Location.X + dgv.Width / 2 - 50, dgv.Location.Y + 20);
             dgv.Size = new Size(larghezzaPedina * colonne, altezzaPedina * righe);
+            dgv.Location = new Point(this.Width / 2 - dgv.Width / 2, this.Height / 2 - dgv.Height / 2);
             dgv.RowTemplate.Height = altezzaPedina;
             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            //this.label3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             dgv.RowCount = righe;
             dgv.ColumnCount = colonne;
-            label3.Location = new System.Drawing.Point(dgv.Location.X + (colonne * larghezzaPedina) / 2 + 300, lblMe.Location.Y);
+
+            lblTurno.Location = new Point(dgv.Location.X + dgv.Width / 2 - lblTurno.Width / 2, lblMe.Location.Y);
+
+
+
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-
-            nuovaConnessione();
-
+            setStartTimer();
 
             login();
         }
 
-        private void nuovaConnessione()
+        private void setStartTimer()
         {
             timerAttesaAvversario = new System.Windows.Forms.Timer();
             timerAttesaAvversario.Interval = 200;
             timerAttesaAvversario.Tick += new EventHandler(TimerTick);
         }
 
-        private void FormPrincipale_KeyPress(object sender, KeyEventArgs e) // da togliere nella release, nel designer ho aggiunto this.KeyDown = true; per il controllo tasti
+        /*private void FormPrincipale_KeyPress(object sender, KeyEventArgs e) // da togliere nella release, nel designer ho aggiunto this.KeyDown = true; per il controllo tasti
         {
             if (e.Control && e.Alt && e.KeyCode == Keys.R)       // Ctrl-S Save
             {
@@ -125,7 +131,7 @@ namespace Forza4
                 restart();
                 e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
             }
-        }
+        }*/
         public void login()
         {
             Log FormLogin = new Log();
@@ -165,11 +171,11 @@ namespace Forza4
             socket.Bind(localEndPoint);
             socket.Listen(1);
             socket = socket.Accept();
-            //AddToConsoleBox("Checkpoint 0");
             stato = -4;
             logica.ProprioTurno = 1;
-            this.BackColor = coloreMio;
+            proprioSfondo = sfondoVerde;
 
+            this.BackColor = proprioSfondo;
             GetChanges();
 
 
@@ -177,14 +183,15 @@ namespace Forza4
         }
         public void JoinerThread()
         {
-            this.BackColor = coloreAvv;
             //ConsoleBox.Items.Add("Joiner thread started");
             IPEndPoint remoteEP = new IPEndPoint(ip, porta);
             socket.Connect(remoteEP);
 
             //AddToConsoleBox("Checkpoint 0");
+
             stato = -4;
             logica.ProprioTurno = -1;
+            proprioSfondo = sfondoRosso;
 
             //Console.WriteLine(GetLocalIPAddress());
             //byte[] msg = Encoding.ASCII.GetBytes(GetLocalIPAddress());
@@ -198,11 +205,11 @@ namespace Forza4
             //Entrambi gli host sono connessi e la partita inizia
             if (stato == -4)
             {
-                label4.Visible = false;
+                lblAttesa.Visible = false;
                 dgv.Visible = true;
-                btnRestart.Visible = false;
+                //btnRestart.Visible = false;
                 timerAttesaAvversario.Stop();
-                //aggiorna();                
+                this.BackColor = proprioSfondo;
             }
         }
 
@@ -233,35 +240,39 @@ namespace Forza4
             worker.DoWork += worker_DoWork;
             while (true)
             {
+                int bytesRec;
                 string data = null;
-                string[] campi;
+                int separatore = -1;
+                string[] campi = new string[2];
                 byte[] bytes = new Byte[1024];
 
-                while (true)
+                while (separatore <= -1)
                 {
-                    int bytesRec = socket.Receive(bytes);
+                    bytesRec = socket.Receive(bytes);
                     data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                    int separatore = data.IndexOf('|');
+                    separatore = data.IndexOf('|');
                     if (separatore > -1)
                     {
                         campi = data.Split('|');
-                        break;
                     }
                 }
-                try
+
+                if(campi[0]!= "#!new")
                 {
                     stato = logica.eseguiMossa(Convert.ToInt32(campi[0]), -logica.ProprioTurno);
+                     worker.RunWorkerAsync();
                 }
-                catch (Exception)
+                else
                 {
-                    throw new Exception("Errore nella comunicazione");
+                    stato = Convert.ToInt32(campi[1]);
                 }
-                worker.RunWorkerAsync();
+
             }
         }//legge finchè non trova |
         public void aggiorna()
         {
             //LEGENDA DI STATO
+            //-5 giocatore in attesa dell'avversario
             //-4 partita appena iniziata
             //-3 mossa non eseguita per turno sbagliato
             //-2 mossa non eseguita per colonna piena
@@ -300,59 +311,76 @@ namespace Forza4
                 case 0:
                     notifica = new Notifica("Pareggio!", 3, position);
                     btnRestart.Visible = true;
-                    dgv.Visible = false;
+                    dgv.Enabled = false;
                     break;
                 case 1:
                     notifica = new Notifica("Hai vinto :)", 3, position);
                     countPlayer++;
                     btnRestart.Visible = true;
                     aggionalblPunti();
-                    dgv.Visible = false;
+                    dgv.Enabled = false;
                     break;
                 case 2:
                     notifica = new Notifica("Hai perso :(", 3, position);
                     countAvv++;
                     aggionalblPunti();
                     btnRestart.Visible = true;
-                    dgv.Visible = false;
+                    dgv.Enabled = false;
                     break;
             }
         }
-        private void aggionalblPunti() //quiiiii
+        private void aggionalblPunti()
         {
-            lblMe.Text = userName + countPlayer;
-            lblMe.Text = avvName + countPlayer;
+            lblMe.Text = userName +": " + countPlayer;
+            lblAvv.Text = avvName + ": " + countAvv;
         }
 
         private void restart()
         {
             int tmp = logica.ProprioTurno;
             logica = new Forza4Logic(righe, colonne);
+            aggiornaGrafica();
             logica.ProprioTurno = -tmp;
 
-            stato = -4;
+            btnRestart.Visible = false;
 
+            dgv.Visible = false;
+            dgv.Enabled = true;
 
-            aggiorna();
+            lblAttesa.Visible = true;
+            socket.Send(Encoding.ASCII.GetBytes("#!new|" + -4));
+            //aggiorna();
             //CambiaTurnolbl();
+
+            timerAttesaAvversario.Start();
         }
         private void btnRestart_Click(object sender, EventArgs e)
         {
+            if(proprioSfondo == sfondoVerde)
+            {
+                proprioSfondo = sfondoRosso;
+            }
+            else
+            {
+                proprioSfondo = sfondoVerde;
+            }
+            this.BackColor = sfondoDefault;
             restart();
         }
         private void CambiaTurnolbl()
         {
             if (logica.Turno == logica.ProprioTurno)
             {
-                label3.Text = "Turno: " + userName;
-                this.BackColor = coloreMio;
+                lblTurno.Text = "Turno: " + userName;
+                this.BackColor = proprioSfondo;
             }
             else
             {
-                label3.Text = "Turno: " + avvName;
-                this.BackColor = coloreAvv;
+                lblTurno.Text = "Turno: " + avvName;
+                this.BackColor = sfondoDefault;
             }
         }
+
         public void aggiornaGrafica()
         {
             for (int i = 0; i < righe; i++)

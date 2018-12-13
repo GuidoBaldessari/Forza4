@@ -34,8 +34,8 @@ namespace Forza4
             this.lblMe = new System.Windows.Forms.Label();
             this.lblAvv = new System.Windows.Forms.Label();
             this.dgv = new System.Windows.Forms.DataGridView();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.lblTurno = new System.Windows.Forms.Label();
+            this.lblAttesa = new System.Windows.Forms.Label();
             this.btnRestart = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).BeginInit();
             this.SuspendLayout();
@@ -56,7 +56,7 @@ namespace Forza4
             this.lblAvv.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAvv.AutoSize = true;
             this.lblAvv.Font = new System.Drawing.Font("Arial", 15.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
-            this.lblAvv.Location = new System.Drawing.Point(519, 12);
+            this.lblAvv.Location = new System.Drawing.Point(828, 12);
             this.lblAvv.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblAvv.Name = "lblAvv";
             this.lblAvv.Size = new System.Drawing.Size(145, 24);
@@ -74,7 +74,7 @@ namespace Forza4
             this.dgv.ColumnHeadersHeight = 4;
             this.dgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgv.ColumnHeadersVisible = false;
-            this.dgv.Location = new System.Drawing.Point(-18, -4);
+            this.dgv.Location = new System.Drawing.Point(0, 0);
             this.dgv.MultiSelect = false;
             this.dgv.Name = "dgv";
             this.dgv.ReadOnly = true;
@@ -88,34 +88,34 @@ namespace Forza4
             this.dgv.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_CellContentClick);
             this.dgv.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.dgv_CellPainting);
             // 
-            // label3
+            // lblTurno
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Arial", 15.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
-            this.label3.Location = new System.Drawing.Point(261, 89);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(113, 24);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Turno: Me";
+            this.lblTurno.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblTurno.AutoSize = true;
+            this.lblTurno.Font = new System.Drawing.Font("Arial", 15.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
+            this.lblTurno.Location = new System.Drawing.Point(0, 12);
+            this.lblTurno.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTurno.Name = "lblTurno";
+            this.lblTurno.Size = new System.Drawing.Size(113, 24);
+            this.lblTurno.TabIndex = 3;
+            this.lblTurno.Text = "Turno: Me";
             // 
-            // label4
+            // lblAttesa
             // 
-            this.label4.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Arial", 15.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
-            this.label4.Location = new System.Drawing.Point(114, 266);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(462, 24);
-            this.label4.TabIndex = 4;
-            this.label4.Text = "In attesa della connessione dell\'avversario...";
+            this.lblAttesa.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.lblAttesa.AutoSize = true;
+            this.lblAttesa.Font = new System.Drawing.Font("Arial", 15.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
+            this.lblAttesa.Location = new System.Drawing.Point(269, 257);
+            this.lblAttesa.Name = "lblAttesa";
+            this.lblAttesa.Size = new System.Drawing.Size(462, 24);
+            this.lblAttesa.TabIndex = 4;
+            this.lblAttesa.Text = "In attesa della connessione dell\'avversario...";
             // 
             // btnRestart
             // 
-            this.btnRestart.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnRestart.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.btnRestart.Font = new System.Drawing.Font("Arial", 15.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
-            this.btnRestart.Location = new System.Drawing.Point(267, 252);
+            this.btnRestart.Location = new System.Drawing.Point(850, 70);
             this.btnRestart.Name = "btnRestart";
             this.btnRestart.Size = new System.Drawing.Size(122, 38);
             this.btnRestart.TabIndex = 5;
@@ -126,21 +126,22 @@ namespace Forza4
             // 
             // FormPrincipale
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(675, 578);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ClientSize = new System.Drawing.Size(984, 661);
             this.Controls.Add(this.btnRestart);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.lblAttesa);
+            this.Controls.Add(this.lblTurno);
             this.Controls.Add(this.dgv);
             this.Controls.Add(this.lblAvv);
             this.Controls.Add(this.lblMe);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
+            this.MinimumSize = new System.Drawing.Size(1000, 700);
             this.Name = "FormPrincipale";
             this.StartPosition = System.Windows.Forms.FormStartPosition.WindowsDefaultBounds;
             this.Text = "Forza 4";
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormPrincipale_KeyPress);
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -152,8 +153,8 @@ namespace Forza4
         private System.Windows.Forms.Label lblMe;
         private System.Windows.Forms.Label lblAvv;
         private System.Windows.Forms.DataGridView dgv;
-        private System.Windows.Forms.Label label3;
-        private Label label4;
+        private System.Windows.Forms.Label lblTurno;
+        private Label lblAttesa;
         private Button btnRestart;
     }
 }
