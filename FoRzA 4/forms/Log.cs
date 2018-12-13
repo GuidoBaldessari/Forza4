@@ -142,7 +142,7 @@ namespace Forza4.forms
         }
         private void txt_Porta_TextChanged(object sender, EventArgs e)
         {
-            if (txt_Porta.Text.Trim().Length > 0 && Int32.TryParse(txt_Porta.Text, out port)&& port >= 49152 && port <= 65535 || port == 42069)
+            if (txt_Porta.Text.Trim().Length > 0 && Int32.TryParse(txt_Porta.Text, out port)&& port >= 42000 && port <= 48000)
             {
                 txt_Porta.ForeColor = Color.Black;
                 portaa = true;

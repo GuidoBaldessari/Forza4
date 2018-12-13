@@ -144,7 +144,7 @@
             this.txt_Porta.Name = "txt_Porta";
             this.txt_Porta.Size = new System.Drawing.Size(132, 22);
             this.txt_Porta.TabIndex = 3;
-            this.txt_Porta.Text = "50000";
+            this.txt_Porta.Text = "42069";
             this.txt_Porta.TextChanged += new System.EventHandler(this.txt_Porta_TextChanged);
             // 
             // label3
@@ -155,7 +155,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(148, 17);
             this.label3.TabIndex = 3;
-            this.label3.Text = "Port (49152 to 65535)";
+            this.label3.Text = "Port (42000 to 48000)";
             // 
             // label1
             // 
