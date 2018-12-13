@@ -32,8 +32,7 @@ namespace Forza4.forms
         private void Start_Click(object sender, EventArgs e)
         {
             if (Controllo_Start())
-            {
-               
+            {               
                 username = txt_Username.Text;
                 port = Convert.ToInt32(txt_Porta.Text);
                 if (RB_Host.Checked)
@@ -115,6 +114,14 @@ namespace Forza4.forms
         {
             txt_IP.Enabled = !txt_IP.Enabled;
             lbl_Server.Enabled = !lbl_Server.Enabled;
+            if (txt_IP.Enabled)
+            {
+                button1.Text = "Join";
+            }
+            else
+            {
+                button1.Text = "Start";
+            }
         }
 
         private void txt_Porta_TextChanged(object sender, EventArgs e)

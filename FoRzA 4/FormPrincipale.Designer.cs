@@ -47,7 +47,7 @@ namespace Forza4
             this.lblMe.Location = new System.Drawing.Point(11, 12);
             this.lblMe.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblMe.Name = "lblMe";
-            this.lblMe.Size = new System.Drawing.Size(65, 24);
+            this.lblMe.Size = new System.Drawing.Size(86, 32);
             this.lblMe.TabIndex = 0;
             this.lblMe.Text = "Me: 0";
             // 
@@ -59,7 +59,7 @@ namespace Forza4
             this.lblAvv.Location = new System.Drawing.Point(828, 12);
             this.lblAvv.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblAvv.Name = "lblAvv";
-            this.lblAvv.Size = new System.Drawing.Size(145, 24);
+            this.lblAvv.Size = new System.Drawing.Size(186, 32);
             this.lblAvv.TabIndex = 1;
             this.lblAvv.Text = "Avversario: 0";
             // 
@@ -96,7 +96,7 @@ namespace Forza4
             this.lblTurno.Location = new System.Drawing.Point(0, 12);
             this.lblTurno.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTurno.Name = "lblTurno";
-            this.lblTurno.Size = new System.Drawing.Size(113, 24);
+            this.lblTurno.Size = new System.Drawing.Size(146, 32);
             this.lblTurno.TabIndex = 3;
             this.lblTurno.Text = "Turno: Me";
             // 
@@ -107,7 +107,7 @@ namespace Forza4
             this.lblAttesa.Font = new System.Drawing.Font("Arial", 15.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
             this.lblAttesa.Location = new System.Drawing.Point(269, 257);
             this.lblAttesa.Name = "lblAttesa";
-            this.lblAttesa.Size = new System.Drawing.Size(462, 24);
+            this.lblAttesa.Size = new System.Drawing.Size(581, 32);
             this.lblAttesa.TabIndex = 4;
             this.lblAttesa.Text = "In attesa della connessione dell\'avversario...";
             // 

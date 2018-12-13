@@ -29,7 +29,7 @@ namespace Forza4
         System.Windows.Forms.Timer timerAttesaAvversario;
         BackgroundWorker worker = new BackgroundWorker();
         private delegate void DELEGATE();
-
+        private bool tuttofunzionante = false;
 
         int stato;
         public Forza4Logic logica;
@@ -84,6 +84,7 @@ namespace Forza4
         #region Costruttore
         public FormPrincipale()
         {
+            CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
 
             righe = 6;
@@ -109,7 +110,7 @@ namespace Forza4
 
 
 
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+          
 
             setStartTimer();
 
@@ -134,29 +135,59 @@ namespace Forza4
         }*/
         public void login()
         {
-            Log FormLogin = new Log();
-
-            if (FormLogin.ShowDialog() == DialogResult.OK)
+            do
             {
-                ip = FormLogin.ip;
-                porta = FormLogin.port;
+                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 Thread t;
-                if (FormLogin.mode == "host")
+                Log FormLogin = new Log();              
+
+                if (FormLogin.ShowDialog() == DialogResult.OK)
                 {
-                    t = new Thread(HostThread);
+                    ip = FormLogin.ip;
+                    porta = FormLogin.port;
+            
+                    if (FormLogin.mode == "host")
+                    {                       
+                            t = new Thread(HostThread);
+                            t.Start();
+                            tuttofunzionante = true;
+                            timerAttesaAvversario.Start();
+                    }
+                    else
+                    {
+                        try
+                        {
+                            IPEndPoint remoteEP = new IPEndPoint(ip, porta);
+                            socket.Connect(remoteEP);                           
+                            t = new Thread(JoinerThread);
+                            t.Start();
+                            tuttofunzionante = true;
+                            timerAttesaAvversario.Start();
+                        }
+                        catch (Exception)
+                        {
+                            
+                            DialogResult result = MessageBox.Show("Host non disponibile, controllare la connessione/indirizzo inserito", "caption", MessageBoxButtons.OK);
+                            if (result == DialogResult.OK)
+                            {
+                                tuttofunzionante = false;
+                                socket.Close();
+                            }
+                            
+                        }                                                 
+                    }
+                   
                 }
-                else
+                else //se viene chiuso il form del login si chiude tutto e bom
                 {
-                    t = new Thread(JoinerThread);
+                    this.Close();
+                    tuttofunzionante = true;
+                    timerAttesaAvversario.Stop();
                 }
-                t.Start();
-                timerAttesaAvversario.Start();
-            }
-            else //se viene chiuso il form del login si chiude tutto e bom
-            {
-                this.Close();
-                timerAttesaAvversario.Stop();
-            }
+               
+                FormLogin.Close();
+            } while (!tuttofunzionante);
+           
         }
         #endregion
 
@@ -176,19 +207,21 @@ namespace Forza4
             logica.ProprioTurno = 1;
             proprioSfondo = sfondoVerde;
             cambioSfondo();
+            tuttofunzionante = true;
             //this.BackColor = proprioSfondo;
             GetChanges();
         }
         public void JoinerThread()
         {
             PedinaPlayer = FoRzA_4.Properties.Resources.Pedina__1;
-            PedinaAvversario = FoRzA_4.Properties.Resources.Pedina_1;           
-            IPEndPoint remoteEP = new IPEndPoint(ip, porta);
-            socket.Connect(remoteEP);        
-            stato = -4;
-            logica.ProprioTurno = -1;
-            proprioSfondo = sfondoRosso;
-            GetChanges();
+            PedinaAvversario = FoRzA_4.Properties.Resources.Pedina_1;
+           
+                stato = -4;
+                logica.ProprioTurno = -1;
+                proprioSfondo = sfondoRosso;             
+                GetChanges();
+            
+           
         }
         public void TimerTick(object sender, EventArgs e)
         {
@@ -228,37 +261,49 @@ namespace Forza4
         }
         public void GetChanges()
         {
-            worker.DoWork += worker_DoWork;
-            while (true)
+          
+            try
             {
-                int bytesRec;
-                string data = null;
-                int separatore = -1;
-                string[] campi = new string[2];
-                byte[] bytes = new Byte[1024];
-
-                while (separatore <= -1)
+                worker.DoWork += worker_DoWork;
+                while (true)
                 {
-                    bytesRec = socket.Receive(bytes);
-                    data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                    separatore = data.IndexOf('|');
-                    if (separatore > -1)
+                    int bytesRec;
+                    string data = null;
+                    int separatore = -1;
+                    string[] campi = new string[2];
+                    byte[] bytes = new Byte[1024];
+
+                    while (separatore <= -1)
                     {
-                        campi = data.Split('|');
+                        bytesRec = socket.Receive(bytes);
+                        data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                        separatore = data.IndexOf('|');
+                        if (separatore > -1)
+                        {
+                            campi = data.Split('|');
+                        }
                     }
-                }
 
-                if(campi[0]!= "#!new")
-                {
-                    stato = logica.eseguiMossa(Convert.ToInt32(campi[0]), -logica.ProprioTurno);
-                     worker.RunWorkerAsync();
-                }
-                else
-                {
-                    stato = Convert.ToInt32(campi[1]);
-                }
+                    if (campi[0] != "#!new")
+                    {
+                        stato = logica.eseguiMossa(Convert.ToInt32(campi[0]), -logica.ProprioTurno);
+                        worker.RunWorkerAsync();
+                    }
+                    else
+                    {
+                        stato = Convert.ToInt32(campi[1]);
+                    }
 
+                }
             }
+            catch (Exception)
+            {
+                tuttofunzionante = false;
+                MessageBox.Show("Avversario disconnesso");
+                System.Diagnostics.Process.Start(Application.ExecutablePath); // to start new instance of application
+                this.Close(); 
+            }
+
         }//legge finchè non trova |
         public void aggiorna()
         {
@@ -363,6 +408,8 @@ namespace Forza4
                 this.BackColor = sfondoDefault;
             }
         }
+
+       
         private void CambiaTurnolbl()
         {
             if (logica.Turno == logica.ProprioTurno)

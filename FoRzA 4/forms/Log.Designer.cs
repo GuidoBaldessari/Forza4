@@ -46,45 +46,52 @@
             // 
             this.lbl_Server.AutoSize = true;
             this.lbl_Server.Enabled = false;
-            this.lbl_Server.Location = new System.Drawing.Point(144, 69);
+            this.lbl_Server.Location = new System.Drawing.Point(192, 85);
+            this.lbl_Server.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbl_Server.Name = "lbl_Server";
-            this.lbl_Server.Size = new System.Drawing.Size(51, 13);
+            this.lbl_Server.Size = new System.Drawing.Size(66, 17);
             this.lbl_Server.TabIndex = 1;
             this.lbl_Server.Text = "Server IP";
             // 
             // txt_IP
             // 
             this.txt_IP.Enabled = false;
-            this.txt_IP.Location = new System.Drawing.Point(38, 66);
+            this.txt_IP.Location = new System.Drawing.Point(51, 81);
+            this.txt_IP.Margin = new System.Windows.Forms.Padding(4);
             this.txt_IP.Name = "txt_IP";
-            this.txt_IP.Size = new System.Drawing.Size(100, 20);
+            this.txt_IP.Size = new System.Drawing.Size(132, 22);
             this.txt_IP.TabIndex = 2;
             this.txt_IP.Text = "127.0.0.1";
             // 
             // txt_Username
             // 
-            this.txt_Username.Location = new System.Drawing.Point(21, 26);
+            this.txt_Username.Location = new System.Drawing.Point(28, 32);
+            this.txt_Username.Margin = new System.Windows.Forms.Padding(4);
             this.txt_Username.Name = "txt_Username";
-            this.txt_Username.Size = new System.Drawing.Size(100, 20);
+            this.txt_Username.Size = new System.Drawing.Size(132, 22);
             this.txt_Username.TabIndex = 3;
             this.txt_Username.Text = "asdasd";
+            this.txt_Username.Visible = false;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(132, 29);
+            this.label2.Location = new System.Drawing.Point(176, 36);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(55, 13);
+            this.label2.Size = new System.Drawing.Size(73, 17);
             this.label2.TabIndex = 4;
             this.label2.Text = "Username";
+            this.label2.Visible = false;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(46, 238);
+            this.button1.Location = new System.Drawing.Point(61, 247);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(170, 35);
+            this.button1.Size = new System.Drawing.Size(227, 43);
             this.button1.TabIndex = 5;
-            this.button1.Text = "Join";
+            this.button1.Text = "Start";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Start_Click);
             // 
@@ -94,9 +101,11 @@
             this.groupBox1.Controls.Add(this.RB_Host);
             this.groupBox1.Controls.Add(this.txt_IP);
             this.groupBox1.Controls.Add(this.lbl_Server);
-            this.groupBox1.Location = new System.Drawing.Point(21, 117);
+            this.groupBox1.Location = new System.Drawing.Point(28, 98);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(229, 100);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox1.Size = new System.Drawing.Size(305, 123);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Options";
@@ -104,9 +113,10 @@
             // RB_Join
             // 
             this.RB_Join.AutoSize = true;
-            this.RB_Join.Location = new System.Drawing.Point(22, 43);
+            this.RB_Join.Location = new System.Drawing.Point(29, 53);
+            this.RB_Join.Margin = new System.Windows.Forms.Padding(4);
             this.RB_Join.Name = "RB_Join";
-            this.RB_Join.Size = new System.Drawing.Size(44, 17);
+            this.RB_Join.Size = new System.Drawing.Size(55, 21);
             this.RB_Join.TabIndex = 1;
             this.RB_Join.Text = "Join";
             this.RB_Join.UseVisualStyleBackColor = true;
@@ -116,9 +126,10 @@
             // 
             this.RB_Host.AutoSize = true;
             this.RB_Host.Checked = true;
-            this.RB_Host.Location = new System.Drawing.Point(7, 20);
+            this.RB_Host.Location = new System.Drawing.Point(9, 25);
+            this.RB_Host.Margin = new System.Windows.Forms.Padding(4);
             this.RB_Host.Name = "RB_Host";
-            this.RB_Host.Size = new System.Drawing.Size(88, 17);
+            this.RB_Host.Size = new System.Drawing.Size(112, 21);
             this.RB_Host.TabIndex = 0;
             this.RB_Host.TabStop = true;
             this.RB_Host.Text = "Host a match";
@@ -127,9 +138,10 @@
             // 
             // txt_Porta
             // 
-            this.txt_Porta.Location = new System.Drawing.Point(21, 67);
+            this.txt_Porta.Location = new System.Drawing.Point(28, 36);
+            this.txt_Porta.Margin = new System.Windows.Forms.Padding(4);
             this.txt_Porta.Name = "txt_Porta";
-            this.txt_Porta.Size = new System.Drawing.Size(100, 20);
+            this.txt_Porta.Size = new System.Drawing.Size(132, 22);
             this.txt_Porta.TabIndex = 3;
             this.txt_Porta.Text = "50000";
             this.txt_Porta.TextChanged += new System.EventHandler(this.txt_Porta_TextChanged);
@@ -137,17 +149,18 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(133, 70);
+            this.label3.Location = new System.Drawing.Point(177, 40);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(26, 13);
+            this.label3.Size = new System.Drawing.Size(34, 17);
             this.label3.TabIndex = 3;
             this.label3.Text = "Port";
             // 
             // Log
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(279, 303);
+            this.ClientSize = new System.Drawing.Size(347, 306);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txt_Porta);
             this.Controls.Add(this.groupBox1);
@@ -155,8 +168,9 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txt_Username);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Log";
-            this.Text = "Loggin";
+            this.Text = "Login";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

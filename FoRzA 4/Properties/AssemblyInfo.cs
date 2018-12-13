@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // set di attributi. Modificare i valori di questi attributi per modificare le informazioni
 // associate a un assembly.
 [assembly: AssemblyTitle("FoRzA 4")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Forza4 by Andreatta-Baldessari")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FoRzA 4")]
+[assembly: AssemblyCompany("Andreatta-Baldessari")]
+[assembly: AssemblyProduct("Forza 4")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

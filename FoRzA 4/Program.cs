@@ -14,10 +14,17 @@ namespace Forza4
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormPrincipale());
-            Environment.Exit(0);
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new FormPrincipale());
+                Environment.Exit(0);
+            }
+            catch (Exception)
+            {               
+            }
+           
         }
     }
 }
