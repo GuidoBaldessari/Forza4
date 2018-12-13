@@ -59,8 +59,8 @@ namespace Forza4
             set { larghezzaPedina = value; }
         }
 
-        Image PedinaPlayer = FoRzA_4.Properties.Resources.Pedina_1;
-        Image PedinaAvversario = FoRzA_4.Properties.Resources.Pedina__1;
+        Image PedinaPlayer;//= FoRzA_4.Properties.Resources.Pedina_1;
+        Image PedinaAvversario;// = FoRzA_4.Properties.Resources.Pedina__1;
         Image PedinaVuota = FoRzA_4.Properties.Resources.Pedina_vuota;
 
         Color proprioSfondo, sfondoDefault = Color.FromArgb(0, 111, 244);
@@ -164,7 +164,8 @@ namespace Forza4
         public void HostThread()
         {
             //AddToConsoleBox("Host thread started");
-
+            PedinaPlayer = FoRzA_4.Properties.Resources.Pedina_1;
+            PedinaAvversario = FoRzA_4.Properties.Resources.Pedina__1;
             //IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             //IPAddress ipAddress = ipHostInfo.AddressList[0];
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, porta);
@@ -174,31 +175,20 @@ namespace Forza4
             stato = -4;
             logica.ProprioTurno = 1;
             proprioSfondo = sfondoVerde;
-
-            this.BackColor = proprioSfondo;
+            cambioSfondo();
+            //this.BackColor = proprioSfondo;
             GetChanges();
-
-
-
         }
         public void JoinerThread()
         {
-            //ConsoleBox.Items.Add("Joiner thread started");
+            PedinaPlayer = FoRzA_4.Properties.Resources.Pedina__1;
+            PedinaAvversario = FoRzA_4.Properties.Resources.Pedina_1;           
             IPEndPoint remoteEP = new IPEndPoint(ip, porta);
-            socket.Connect(remoteEP);
-
-            //AddToConsoleBox("Checkpoint 0");
-
+            socket.Connect(remoteEP);        
             stato = -4;
             logica.ProprioTurno = -1;
             proprioSfondo = sfondoRosso;
-
-            //Console.WriteLine(GetLocalIPAddress());
-            //byte[] msg = Encoding.ASCII.GetBytes(GetLocalIPAddress());
-            //int bytesSent = socket.Send(msg);
             GetChanges();
-
-
         }
         public void TimerTick(object sender, EventArgs e)
         {
@@ -209,7 +199,8 @@ namespace Forza4
                 dgv.Visible = true;
                 //btnRestart.Visible = false;
                 timerAttesaAvversario.Stop();
-                this.BackColor = proprioSfondo;
+                cambioSfondo();
+                //this.BackColor = proprioSfondo;
             }
         }
 
@@ -334,45 +325,37 @@ namespace Forza4
             lblMe.Text = userName +": " + countPlayer;
             lblAvv.Text = avvName + ": " + countAvv;
         }
-
         private void restart()
         {
             int tmp = logica.ProprioTurno;
             logica = new Forza4Logic(righe, colonne);
             aggiornaGrafica();
             logica.ProprioTurno = -tmp;
-
             btnRestart.Visible = false;
-
             dgv.Visible = false;
             dgv.Enabled = true;
-
             lblAttesa.Visible = true;
             socket.Send(Encoding.ASCII.GetBytes("#!new|" + -4));
             //aggiorna();
             //CambiaTurnolbl();
-
+            Image imgtmp;
+            imgtmp = PedinaPlayer;
+            PedinaPlayer = PedinaAvversario;
+            PedinaAvversario = imgtmp;
             timerAttesaAvversario.Start();
         }
         private void btnRestart_Click(object sender, EventArgs e)
         {
-            if(proprioSfondo == sfondoVerde)
-            {
-                proprioSfondo = sfondoRosso;
-            }
-            else
-            {
-                proprioSfondo = sfondoVerde;
-            }
+            cambioSfondo();
             this.BackColor = sfondoDefault;
             restart();
         }
-        private void CambiaTurnolbl()
+        private void cambioSfondo()
         {
             if (logica.Turno == logica.ProprioTurno)
             {
+                this.BackColor = sfondoVerde;
                 lblTurno.Text = "Turno: " + userName;
-                this.BackColor = proprioSfondo;
             }
             else
             {
@@ -380,7 +363,20 @@ namespace Forza4
                 this.BackColor = sfondoDefault;
             }
         }
-
+        private void CambiaTurnolbl()
+        {
+            if (logica.Turno == logica.ProprioTurno)
+            {
+                lblTurno.Text = "Turno: " + userName;
+                //this.BackColor = proprioSfondo;
+            }
+            else
+            {
+                lblTurno.Text = "Turno: " + avvName;
+                //this.BackColor = sfondoDefault;
+            }
+            cambioSfondo();
+        }
         public void aggiornaGrafica()
         {
             for (int i = 0; i < righe; i++)
