@@ -26,10 +26,10 @@ namespace Forza4
         IPAddress ip;
         public int porta;
         Socket socket;
-        string msg;
+
         System.Windows.Forms.Timer timerAttesaAvversario;
 
-        int stato;
+        int stato = -4;
         public Forza4Logic logica;
 
         private int righe;
@@ -60,7 +60,7 @@ namespace Forza4
         Image PedinaPlayer = FoRzA_4.Properties.Resources.Pedina_1;
         Image PedinaAvversario = FoRzA_4.Properties.Resources.Pedina__1;
         Image PedinaVuota = FoRzA_4.Properties.Resources.Pedina_vuota;
-
+        Color coloreMio = Color.FromArgb(76, 255, 0), coloreAvv = Color.Red;
         private int countPlayer;
         public int vittoreMie
         {
@@ -74,7 +74,7 @@ namespace Forza4
             set { countAvv = value; }
         }
 
-        public string turnoPlayer1 = "Me", turnoPlayer2 = "Avversario";
+        public string userName = "Me", avvName = "Avversario";
         #endregion
 
         #region Costruttore
@@ -91,15 +91,16 @@ namespace Forza4
 
             logica = new Forza4Logic(righe, colonne);
 
-            
 
+            this.dgv.Location = new System.Drawing.Point(30, 50);
+            label3.Location = new System.Drawing.Point(dgv.Location.X + dgv.Width / 2 - 50, dgv.Location.Y + 20);
             dgv.Size = new Size(larghezzaPedina * colonne, altezzaPedina * righe);
             dgv.RowTemplate.Height = altezzaPedina;
             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             //this.label3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             dgv.RowCount = righe;
             dgv.ColumnCount = colonne;
-
+            label3.Location = new System.Drawing.Point(dgv.Location.X + (colonne * larghezzaPedina) / 2 + 300, lblMe.Location.Y);
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
 
@@ -153,24 +154,11 @@ namespace Forza4
         }
         #endregion
 
-        #region Inizio Connessione
-        //MAI USATO
-        /*public string GetLocalIPAddress()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
-        }*/
+        #region Inizio Connessione     
         public void HostThread()
         {
             //AddToConsoleBox("Host thread started");
-            
+
             //IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             //IPAddress ipAddress = ipHostInfo.AddressList[0];
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, porta);
@@ -180,7 +168,7 @@ namespace Forza4
             //AddToConsoleBox("Checkpoint 0");
             stato = -4;
             logica.ProprioTurno = 1;
-
+            this.BackColor = coloreMio;
 
             GetChanges();
 
@@ -189,6 +177,7 @@ namespace Forza4
         }
         public void JoinerThread()
         {
+            this.BackColor = coloreAvv;
             //ConsoleBox.Items.Add("Joiner thread started");
             IPEndPoint remoteEP = new IPEndPoint(ip, porta);
             socket.Connect(remoteEP);
@@ -201,7 +190,7 @@ namespace Forza4
             //byte[] msg = Encoding.ASCII.GetBytes(GetLocalIPAddress());
             //int bytesSent = socket.Send(msg);
             GetChanges();
-           
+
 
         }
         public void TimerTick(object sender, EventArgs e)
@@ -226,12 +215,10 @@ namespace Forza4
             Delegate del = new DELEGATE(aggiorna);
             this.Invoke(del);
         }
-
-
         private void dgv_CellContentClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             stato = logica.eseguiMossa(e.ColumnIndex, logica.ProprioTurno);
-            
+
             //La mossa viene inviata all'avversario solo se è il proprio turno e se la colonna non era piena
             if (stato >= -1)
             {
@@ -292,7 +279,7 @@ namespace Forza4
             switch (stato)
             {
                 case -4:
-                    if(logica.ProprioTurno == logica.Turno)
+                    if (logica.ProprioTurno == logica.Turno)
                     {
                         notifica = new Notifica("E' il tuo turno!", 3, position);
                     }
@@ -317,17 +304,24 @@ namespace Forza4
                     break;
                 case 1:
                     notifica = new Notifica("Hai vinto :)", 3, position);
-                    vittoreMie++;
+                    countPlayer++;
                     btnRestart.Visible = true;
+                    aggionalblPunti();
                     dgv.Visible = false;
                     break;
                 case 2:
                     notifica = new Notifica("Hai perso :(", 3, position);
-                    vittorieAvversario++;
+                    countAvv++;
+                    aggionalblPunti();
                     btnRestart.Visible = true;
                     dgv.Visible = false;
                     break;
             }
+        }
+        private void aggionalblPunti() //quiiiii
+        {
+            lblMe.Text = userName + countPlayer;
+            lblMe.Text = avvName + countPlayer;
         }
 
         private void restart()
@@ -349,9 +343,15 @@ namespace Forza4
         private void CambiaTurnolbl()
         {
             if (logica.Turno == logica.ProprioTurno)
-                label3.Text = "Turno: " + turnoPlayer1;
+            {
+                label3.Text = "Turno: " + userName;
+                this.BackColor = coloreMio;
+            }
             else
-                label3.Text = "Turno: " + turnoPlayer2;
+            {
+                label3.Text = "Turno: " + avvName;
+                this.BackColor = coloreAvv;
+            }
         }
         public void aggiornaGrafica()
         {

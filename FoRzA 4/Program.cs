@@ -16,8 +16,8 @@ namespace Forza4
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            
-                Application.Run(new FormPrincipale());
+            Application.Run(new FormPrincipale());
+            Environment.Exit(0);
         }
     }
 }
